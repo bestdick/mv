@@ -27,6 +27,7 @@ import android.widget.RelativeLayout;
 import android.widget.Toast;
 
 import com.kakao.auth.Session;
+import com.squareup.picasso.Picasso;
 
 import static android.view.KeyEvent.KEYCODE_VOLUME_DOWN;
 import static android.view.KeyEvent.KEYCODE_VOLUME_UP;
@@ -97,7 +98,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         // Set up the ViewPager with the sections adapter.
         mViewPager = (ViewPager) findViewById(R.id.container);
         mViewPager.setAdapter(mViewPagerAdapter);
-        mViewPager.setOffscreenPageLimit(3);
+        mViewPager.setOffscreenPageLimit(5);
 
 
 
@@ -113,6 +114,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         mViewPager.addOnPageChangeListener(new TabLayout.TabLayoutOnPageChangeListener(tabLayout));
         tabLayout.addOnTabSelectedListener(new TabLayout.ViewPagerOnTabSelectedListener(mViewPager));
 
+        toolbar();
+
 }
 
     public void toolbar(){
@@ -125,7 +128,24 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         getSupportActionBar().setHomeAsUpIndicator(R.drawable.button);
 //        getSupportActionBar().setTitle("");  //해당 액티비티의 툴바에 있는 타이틀을 공백으로 처리
         ImageView thumbnail_imageView = findViewById(R.id.toolbar_thumbnail_imageView);
+        getImage(thumbnail_imageView, LoggedInUser_thumbnail);
+    }
 
+    public void getImage(ImageView imageView, String url){
+        Picasso.with(this)
+                .load(url)
+                .transform(new CircleTransform())
+                .into(imageView, new com.squareup.picasso.Callback() {
+                    @Override
+                    public void onSuccess() {
+
+                    }
+
+                    @Override
+                    public void onError() {
+
+                    }
+                });
     }
 
     public void moveToUserInfoActivity(){
