@@ -21,6 +21,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.WindowManager;
+import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
 import android.widget.Toast;
@@ -65,8 +66,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
         pb = (ProgressBar) findViewById(R.id.mainactivity_pb);
 
-
-
                 //permission
         ActivityCompat.requestPermissions(MainActivity.this, new String[]{Manifest.permission.READ_EXTERNAL_STORAGE}, 0);
         ActivityCompat.requestPermissions(MainActivity.this, new String[]{Manifest.permission.INTERNET}, 0);
@@ -88,8 +87,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             LoggedInUser_nickname = intent.getStringExtra("user_nickname");
             LoggedInUser_thumbnail = null;
 
-
-
         }else{
             Toast.makeText(MainActivity.this, "else login", Toast.LENGTH_LONG).show();
         }
@@ -108,17 +105,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         drawer = (DrawerLayout) findViewById(R.id.drawer);
 //drawer navigation 초기 설정
 
-        // 추가된 소스, Toolbar를 생성한다.
-        myToolbar = (Toolbar) findViewById(R.id.my_toolbar);
-
-        setSupportActionBar(myToolbar);
-//toolbox setting -[----------
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-        getSupportActionBar().setTitle("menu_button");
-        getSupportActionBar().setHomeAsUpIndicator(R.drawable.button);
-        getSupportActionBar().setTitle("");  //해당 액티비티의 툴바에 있는 타이틀을 공백으로 처리
-
-
         //handling navigation view item event
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
@@ -128,6 +114,20 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         tabLayout.addOnTabSelectedListener(new TabLayout.ViewPagerOnTabSelectedListener(mViewPager));
 
 }
+
+    public void toolbar(){
+        // 추가된 소스, Toolbar를 생성한다.
+        myToolbar = (Toolbar) findViewById(R.id.my_toolbar);
+        setSupportActionBar(myToolbar);
+    //toolbox setting -[----------
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+//        getSupportActionBar().setTitle("menu_button");
+        getSupportActionBar().setHomeAsUpIndicator(R.drawable.button);
+//        getSupportActionBar().setTitle("");  //해당 액티비티의 툴바에 있는 타이틀을 공백으로 처리
+        ImageView thumbnail_imageView = findViewById(R.id.toolbar_thumbnail_imageView);
+
+    }
+
     public void moveToUserInfoActivity(){
         Intent intent = new Intent(MainActivity.this, UserInfoSetting.class);
         startActivity(intent);

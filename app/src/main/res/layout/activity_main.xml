@@ -24,8 +24,9 @@
             android:layout_height="match_parent">
 
             <ImageView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
+                android:id="@+id/toolbar_thumbnail_imageView"
+                android:layout_width="50dp"
+                android:layout_height="50dp"
                 android:layout_marginRight="16dp"
                 android:src="@drawable/icon_user"
                 app:layout_constraintBottom_toBottomOf="parent"
