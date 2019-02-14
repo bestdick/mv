@@ -7,6 +7,8 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
+import android.text.Html;
+import android.text.Spanned;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -55,6 +57,12 @@ public class YoutubeFragment extends Fragment {
     String youtuber;
     ArrayList<String> youtubeUrlList;
     ArrayList<String> youtubeTitleList;
+    ArrayList<String> youtubeDescriptionList;
+
+
+
+
+
     ArrayList<String> youtubeThumbnail;
     int rand_number;
     Random r;
@@ -95,6 +103,8 @@ public class YoutubeFragment extends Fragment {
         youtuber="";
         youtubeUrlList = new ArrayList<>();
         youtubeTitleList = new ArrayList<>();
+        youtubeDescriptionList = new ArrayList<>();
+
         youtubeThumbnail = new ArrayList<>();
         r = new Random();
         getYoutubeAddress(rootview);
@@ -109,10 +119,15 @@ public class YoutubeFragment extends Fragment {
             @Override
             public void onInitializationSuccess(YouTubePlayer.Provider provider, YouTubePlayer youTubePlayer, boolean b) {
                 Log.e("Name of Screen", Integer.toString(screen));
+                TextView youtuber_youtube_textView = (TextView) rootview.findViewById(R.id.youtuber_youtube_textView);
                 TextView youtubeTitleTextView = (TextView) rootview.findViewById(R.id.title_youtube_textView);
+                TextView youtubeDescriptionTextView = (TextView) rootview.findViewById(R.id.description_youtube_textView);
+                youtuber_youtube_textView.setText(youtuber);
                 youtubeTitleTextView.setText("[유튜브 영상 제목]" + youtubeTitleList.get(rand_num));
+//                Spanned description = Html.fromHtml(youtubeDescriptionList.get(rand_num));
+                youtubeDescriptionTextView.setText(youtubeDescriptionList.get(rand_num));
                 youTubePlayer.setShowFullscreenButton(false);
-                youTubePlayer.setPlayerStyle(YouTubePlayer.PlayerStyle.MINIMAL);
+//                youTubePlayer.setPlayerStyle(YouTubePlayer.PlayerStyle.MINIMAL);
                 youTubePlayer.loadVideo(youtubeUrlList.get(rand_num));
                 youTubePlayer.play();
 
@@ -139,7 +154,7 @@ public class YoutubeFragment extends Fragment {
 
         @Override
         protected String doInBackground(Void... voids) {
-            String target ="https://www.googleapis.com/youtube/v3/activities?part=snippet,contentDetails&channelId="+channel_url+"&key="+api_key+"&maxResults=50";
+            String target ="https://www.googleapis.com/youtube/v3/activities?part=snippet,contentDetails&channelId="+channel_url+"&key="+api_key+"&maxResults=5";
             try{
                 URL url = new URL(target);
                 HttpURLConnection httpURLConnection = (HttpURLConnection) url.openConnection();
@@ -171,7 +186,7 @@ public class YoutubeFragment extends Fragment {
                 for(int i = 0; i<jsonArray.length(); i++){
                     JSONObject temp1 = jsonArray.getJSONObject(i);
                     youtubeTitleList.add(temp1.getJSONObject("snippet").getString("title"));
-
+                    youtubeDescriptionList.add(temp1.getJSONObject("snippet").getString("description"));
                     //*************************  youtube video url ******************
                     JSONObject temp2 = temp1.getJSONObject("contentDetails");
                     if(temp2.isNull("upload")){
@@ -210,11 +225,12 @@ public class YoutubeFragment extends Fragment {
                             JSONArray jsonArray = jsonObject.getJSONArray("response");
                             JSONObject temp = jsonArray.getJSONObject(0);
                             youtuber=temp.getString("author");
+                            String url = temp.getString("url");
 
 
                             youtube_channel_list get_youtube_channel_list = new youtube_channel_list();
                             get_youtube_channel_list.rootview =rootview;
-                            get_youtube_channel_list.channel_url=temp.getString("url");
+                            get_youtube_channel_list.channel_url=url;
                             get_youtube_channel_list.execute();
 
 

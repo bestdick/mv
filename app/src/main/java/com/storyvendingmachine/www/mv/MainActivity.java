@@ -24,6 +24,7 @@ import android.view.WindowManager;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
+import android.widget.Switch;
 import android.widget.Toast;
 
 import com.kakao.auth.Session;
@@ -98,8 +99,42 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         // Set up the ViewPager with the sections adapter.
         mViewPager = (ViewPager) findViewById(R.id.container);
         mViewPager.setAdapter(mViewPagerAdapter);
-        mViewPager.setOffscreenPageLimit(4);
+        mViewPager.setOffscreenPageLimit(5);
 
+        mViewPager.addOnPageChangeListener(new ViewPager.OnPageChangeListener(){
+            @Override
+            public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
+
+            }
+
+            @Override
+            public void onPageSelected(int position) {
+                switch(position) {
+                    case 0:
+                        Log.e("page", "일입니다");
+                        break;
+                    case 1:
+                        Log.e("page", "이입니다");
+                        break;
+                    case 2:
+                        Log.e("page", "삼입니다");
+                        break;
+                    case 3:
+                        Log.e("page", "사입니다");
+                        break;
+                    default:
+                        //switch 5
+                        Log.e("page", "오입니다");
+                        break;
+                }
+                Log.e("page", String.valueOf(position) + " -page.");
+            }
+
+            @Override
+            public void onPageScrollStateChanged(int state) {
+
+            }
+        });
 
 
 //drawer navigation 초기 설정
@@ -113,7 +148,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         TabLayout tabLayout = (TabLayout) findViewById(R.id.tabLayout);
         mViewPager.addOnPageChangeListener(new TabLayout.TabLayoutOnPageChangeListener(tabLayout));
         tabLayout.addOnTabSelectedListener(new TabLayout.ViewPagerOnTabSelectedListener(mViewPager));
-
         toolbar();
 
 }
