@@ -22,13 +22,15 @@ public class ViewPagerAdapter extends FragmentStatePagerAdapter {
         Log.e("item pointer", Integer.toString(position));
 
             if (position == 0) {
-                return mainFragment.newInstance();
+                return YoutubeFragment.newInstance(null, null);
             } else if (position == 1) {
-                return listFragment.newInstance();
+                return mainFragment.newInstance();
             } else if (position == 2) {
+                return listFragment.newInstance();
+            } else if (position == 3) {
                 return writingFragment.newInstance();
-            } else {
-                return null;
+            }else{
+                return writingFragment.newInstance();
             }
 
     }
@@ -36,7 +38,7 @@ public class ViewPagerAdapter extends FragmentStatePagerAdapter {
     @Override
     public int getCount() {
         // Show 3 total pages.
-        return 3;
+        return 5;
     }
 
 
