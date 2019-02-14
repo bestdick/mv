@@ -550,49 +550,47 @@ public class mainFragment extends Fragment{
     }
 
     private void loadImageFromUrl(String url, ImageView view, int which_imageView) {
-if(which_imageView == 0){
-    // 0 일때는 썸네일을 뜻한다
-    if(url == null) {
-        Log.e("no image url", "url empty");
-    }else if(url.equals("")){
-        Log.e("no image url", "url empty");
-    }else{
-        Picasso.with(getContext()).load(url).into(view, new com.squareup.picasso.Callback() {
-            @Override
-            public void onSuccess() {
-                Log.e("loadImageFromUrl", "success");
+        if(which_imageView == 0){
+            // 0 일때는 썸네일을 뜻한다
+            if(url == null) {
+                Log.e("no image url", "url empty");
+            }else if(url.equals("")){
+                Log.e("no image url", "url empty");
+            }else{
+                Picasso.with(getContext()).load(url).into(view, new com.squareup.picasso.Callback() {
+                    @Override
+                    public void onSuccess() {
+                        Log.e("loadImageFromUrl", "success");
 
+                    }
+                    @Override
+                    public void onError() {
+                        Log.e("load image", "fail to load images ");
+                    }
+                });
             }
-            @Override
-            public void onError() {
-                Log.e("load image", "fail to load images ");
-            }
-        });
-    }
-}else if(which_imageView == 1){
-    //1은 그 외의 것들을 뜻한다
-    if(url == null) {
-        Log.e("no image url", "url empty");
-        view.setBackground(getResources().getDrawable(R.drawable.empty_image));
-    }else if(url.equals("")){
-        Log.e("no image url", "url empty");
-        view.setBackground(getResources().getDrawable(R.drawable.empty_image));
-    }else{
-        Picasso.with(getContext()).load(url).into(view, new com.squareup.picasso.Callback() {
-            @Override
-            public void onSuccess() {
-                Log.e("loadImageFromUrl", "success");
+        }else if(which_imageView == 1){
+            //1은 그 외의 것들을 뜻한다
+            if(url == null) {
+                Log.e("no image url", "url empty");
+                view.setBackground(getResources().getDrawable(R.drawable.empty_image));
+            }else if(url.equals("")){
+                Log.e("no image url", "url empty");
+                view.setBackground(getResources().getDrawable(R.drawable.empty_image));
+            }else{
+                Picasso.with(getContext()).load(url).into(view, new com.squareup.picasso.Callback() {
+                    @Override
+                    public void onSuccess() {
+                        Log.e("loadImageFromUrl", "success");
 
+                    }
+                    @Override
+                    public void onError() {
+                        Log.e("load image", "fail to load images ");
+                    }
+                });
             }
-            @Override
-            public void onError() {
-                Log.e("load image", "fail to load images ");
-            }
-        });
-    }
-}
-
-
+        }
     }
 
     public class youtube_channel_list  extends AsyncTask<Void, Void, String> {

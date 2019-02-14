@@ -24,11 +24,11 @@ public class ViewPagerAdapter extends FragmentStatePagerAdapter {
             if (position == 0) {
                 return YoutubeFragment.newInstance(null, null);
             } else if (position == 1) {
-                return mainFragment.newInstance();
+                return BoxOfficeFragment.newInstance(null, null);
             } else if (position == 2) {
-                return listFragment.newInstance();
+                return mainFragment.newInstance();
             } else if (position == 3) {
-                return writingFragment.newInstance();
+                return listFragment.newInstance();
             }else{
                 return writingFragment.newInstance();
             }
