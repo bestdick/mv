@@ -26,7 +26,8 @@ public class ViewPagerAdapter extends FragmentStatePagerAdapter {
             } else if (position == 1) {
                 return BoxOfficeFragment.newInstance(null, null);
             } else if (position == 2) {
-                return mainFragment.newInstance();
+                return listFragment.newInstance();
+//                return mainFragment.newInstance();
             } else if (position == 3) {
                 return listFragment.newInstance();
             }else{
