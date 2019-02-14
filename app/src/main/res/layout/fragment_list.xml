@@ -1,0 +1,132 @@
+<android.support.constraint.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:id="@+id/list_fragment"
+    tools:context="com.storyvendingmachine.www.mv.listFragment"
+    >
+
+    <LinearLayout
+        android:id="@+id/ll1"
+        android:layout_width="0dp"
+        android:layout_height="50dp"
+        android:gravity="center_vertical"
+        android:orientation="horizontal"
+        android:weightSum="1"
+        android:baselineAligned="false"
+        app:layout_constraintBottom_toTopOf="@+id/swipe_layout"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:background="@color/colorWhite"
+            android:layout_marginRight="1dp"
+            android:gravity="center_vertical"
+            android:layout_weight=".5">
+
+            <ImageView
+                android:id="@+id/option_one_image"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:src="@drawable/bookmark_icon" />
+
+            <TextView
+                android:id="@+id/selection_textView_1"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="selection view"
+                android:textAppearance="@style/TextAppearance.AppCompat.Widget.Button" />
+
+            <TextView
+                android:id="@+id/selection_count_textView_1"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="count" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:background="@color/colorWhite"
+            android:layout_marginLeft="1dp"
+            android:gravity="center_vertical"
+            android:layout_weight=".5">
+
+            <ImageView
+                android:id="@+id/option_two_image"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:src="@drawable/bookmark_off_icon" />
+
+            <TextView
+                android:id="@+id/selection_textView_2"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="selection view"
+                android:textAppearance="@style/TextAppearance.AppCompat.Widget.Button" />
+
+            <TextView
+                android:id="@+id/selection_count_textView_2"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="count" />
+
+        </LinearLayout>
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/empty_layout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/ll1">
+
+    </LinearLayout>
+
+    <android.support.v4.widget.SwipeRefreshLayout
+        android:id="@+id/swipe_layout"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/ll1">
+
+        <ListView
+            android:id="@+id/listFragment_container"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent" />
+    </android.support.v4.widget.SwipeRefreshLayout>
+
+</android.support.constraint.ConstraintLayout>
+
+
+<!--<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"-->
+    <!--xmlns:tools="http://schemas.android.com/tools"-->
+    <!--android:layout_width="match_parent"-->
+    <!--android:layout_height="match_parent"-->
+    <!--android:id="@+id/list_fragment"-->
+    <!--tools:context="com.storyvendingmachine.www.mv.listFragment">-->
+    <!---->
+        <!--<android.support.v4.widget.SwipeRefreshLayout-->
+            <!--android:layout_width="match_parent"-->
+            <!--android:layout_height="match_parent"-->
+            <!--android:id="@+id/swipe_layout">-->
+            <!--<ListView-->
+                <!--android:id="@+id/listFragment_container"-->
+                <!--android:layout_width="match_parent"-->
+                <!--android:layout_height="match_parent" />-->
+        <!--</android.support.v4.widget.SwipeRefreshLayout>-->
+    <!---->
+<!--</FrameLayout>-->
+
+

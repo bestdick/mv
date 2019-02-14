@@ -1,0 +1,11 @@
+<resources>
+    <string name="app_name">준훈노트</string>
+    <string name="kakao_app_key">d674f795aa8da189a08b5aff1a86b19b</string>
+
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+
+    <!--YOUTUBE API KEY-->
+    <string name="youtube_api_key">AIzaSyCtICWDaIimwYlVC6tkiUxa9d7ZswS0zP4</string>
+    <!--YOUTUBE API KEY-->
+</resources>
