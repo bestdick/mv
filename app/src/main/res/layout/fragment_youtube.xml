@@ -19,13 +19,13 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical">
-
-            <LinearLayout
-                android:id="@+id/youtube_container"
-                android:orientation="vertical"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent">
-            </LinearLayout>
+<!--&lt;!&ndash;under layout is actual youtube &ndash;&gt;-->
+            <!--<LinearLayout-->
+                <!--android:id="@+id/youtube_container"-->
+                <!--android:orientation="vertical"-->
+                <!--android:layout_width="match_parent"-->
+                <!--android:layout_height="match_parent">-->
+            <!--</LinearLayout>-->
             <android.support.constraint.ConstraintLayout
                 android:id="@+id/youtube_conLayout"
                 android:layout_width="match_parent"
@@ -44,10 +44,11 @@
                     app:layout_constraintTop_toTopOf="parent" />
 
                 <android.support.constraint.ConstraintLayout
-                    android:id="@+id/constraintLayout4"
+                    android:id="@+id/basic_info_conLayout"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:elevation="1dp"
+                    android:clickable="true"
+                    android:elevation="2dp"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toBottomOf="@+id/youtube_fragment">
@@ -56,12 +57,13 @@
                         android:id="@+id/youtuber_youtube_textView"
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
-                        android:layout_marginEnd="16dp"
                         android:layout_marginStart="16dp"
                         android:layout_marginTop="8dp"
+                        android:layout_marginEnd="16dp"
                         android:text="youtuber"
+                        android:textSize="16sp"
                         android:textStyle="bold"
-                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintEnd_toStartOf="@+id/drop_imageView"
                         app:layout_constraintStart_toStartOf="parent"
                         app:layout_constraintTop_toTopOf="parent" />
 
@@ -69,36 +71,47 @@
                         android:id="@+id/title_youtube_textView"
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
-                        android:layout_marginBottom="8dp"
-                        android:layout_marginEnd="16dp"
                         android:layout_marginStart="16dp"
                         android:layout_marginTop="8dp"
-                        android:textStyle="bold"
+                        android:layout_marginEnd="16dp"
+                        android:layout_marginBottom="8dp"
                         android:text="title"
+                        android:textStyle="bold"
                         app:layout_constraintBottom_toBottomOf="parent"
-                        app:layout_constraintEnd_toEndOf="parent"
-                        app:layout_constraintHorizontal_bias="0.281"
+                        app:layout_constraintEnd_toStartOf="@+id/drop_imageView"
                         app:layout_constraintStart_toStartOf="parent"
                         app:layout_constraintTop_toBottomOf="@+id/youtuber_youtube_textView" />
+
+                    <ImageView
+                        android:id="@+id/drop_imageView"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginEnd="16dp"
+                        android:src="@drawable/icon_dropdown"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintTop_toTopOf="parent" />
                 </android.support.constraint.ConstraintLayout>
 
                 <android.support.constraint.ConstraintLayout
+                    android:id="@+id/description_conLayout"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
+                    android:visibility="gone"
                     app:layout_constraintHorizontal_bias="0.0"
                     app:layout_constraintLeft_toLeftOf="parent"
                     app:layout_constraintRight_toRightOf="parent"
-                    app:layout_constraintTop_toBottomOf="@+id/constraintLayout4">
+                    app:layout_constraintTop_toBottomOf="@+id/basic_info_conLayout">
 
                     <TextView
                         android:id="@+id/description_youtube_textView"
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
 
-                        android:layout_marginBottom="16dp"
-                        android:layout_marginEnd="16dp"
                         android:layout_marginStart="16dp"
                         android:layout_marginTop="16dp"
+                        android:layout_marginEnd="16dp"
+                        android:layout_marginBottom="16dp"
                         android:text="description"
                         app:layout_constraintBottom_toBottomOf="parent"
                         app:layout_constraintEnd_toEndOf="parent"
@@ -106,8 +119,13 @@
                         app:layout_constraintTop_toTopOf="parent" />
                 </android.support.constraint.ConstraintLayout>
             </android.support.constraint.ConstraintLayout>
+            <LinearLayout
+                android:id="@+id/list_container"
+                android:orientation="vertical"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
 
-
+            </LinearLayout>
         </LinearLayout>
     </ScrollView>
 </android.support.constraint.ConstraintLayout>

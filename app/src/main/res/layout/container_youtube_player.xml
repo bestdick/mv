@@ -26,7 +26,7 @@
             app:layout_constraintTop_toTopOf="parent" />
 
         <android.support.constraint.ConstraintLayout
-            android:id="@+id/constraintLayout4"
+            android:id="@+id/basic_info_conLayout"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:elevation="1dp"
@@ -70,7 +70,7 @@
             app:layout_constraintHorizontal_bias="0.0"
             app:layout_constraintLeft_toLeftOf="parent"
             app:layout_constraintRight_toRightOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/constraintLayout4">
+            app:layout_constraintTop_toBottomOf="@+id/basic_info_conLayout">
 
             <TextView
                 android:id="@+id/description_youtube_textView"

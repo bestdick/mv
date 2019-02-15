@@ -1,6 +1,5 @@
 package com.storyvendingmachine.www.mv;
 
-import android.app.Dialog;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -8,33 +7,25 @@ import android.content.Intent;
 import android.content.res.Resources;
 import android.database.Cursor;
 import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.graphics.Matrix;
 import android.graphics.drawable.BitmapDrawable;
-import android.media.Image;
 import android.net.Uri;
-import android.os.Bundle;
 import android.provider.MediaStore;
-import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AlertDialog;
+import android.support.v7.app.AppCompatActivity;
+import android.os.Bundle;
 import android.util.Base64;
 import android.util.Log;
 import android.view.Gravity;
-import android.view.KeyEvent;
-import android.view.LayoutInflater;
 import android.view.View;
-import android.view.ViewGroup;
-import android.view.inputmethod.InputMethod;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
-import android.widget.ListView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.android.volley.DefaultRetryPolicy;
 import com.android.volley.Request;
@@ -47,40 +38,26 @@ import com.android.volley.toolbox.Volley;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
-import org.w3c.dom.Text;
 
 import java.io.ByteArrayOutputStream;
-import java.io.DataOutputStream;
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
 import java.io.IOException;
-import java.net.HttpURLConnection;
-import java.net.MalformedURLException;
-import java.net.URL;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.List;
 
 import static com.storyvendingmachine.www.mv.MainActivity.LoggedInUser_ID;
 import static com.storyvendingmachine.www.mv.MainActivity.LoginType;
 import static java.lang.Integer.parseInt;
 
-
-public class writingFragment extends Fragment {
-
+public class WriteMovieNoteActivity extends AppCompatActivity {
     LinearLayout linearLayout;
-
     int count=0;
-
-
-
     String clicked_image_name;
     String clicked_rotate_btn;
 
-//upload file 에 필요한 변수
+    //upload file 에 필요한 변수
     ProgressDialog dialog;
     int serverResponseCode = 0;
     //String upLoadServerUri = "http://joonandhoon.dothome.co.kr/mn/php/upload_image_request.php";
@@ -108,58 +85,21 @@ public class writingFragment extends Fragment {
     ArrayList<EditText> text_list;
     ArrayList<String> img_width_height;//저장값은 항상 width and then height
 //    ArrayList<String> encoded_data = new ArrayList<>();
-
     //***********************alignment**********************
     String alignment;
     //***********************alignment**********************
-
     EditText first_text_area;
-
     EditText title;
-
-    private void closeKeyboard(){
-        View view = getActivity().getCurrentFocus();
-        if(view !=null){
-            InputMethodManager imm = (InputMethodManager)getActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
-            imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
-        }
-    }
-    public String IntToString(int input){
-        String output = Integer.toString(input);
-        return output;
-    }
-    public static int getScreenWidth() {
-        return Resources.getSystem().getDisplayMetrics().widthPixels;
-    }
-    public static int getScreenHeight() {
-        return Resources.getSystem().getDisplayMetrics().heightPixels;
-    }
-
-    public static writingFragment newInstance() {
-        writingFragment fragment = new writingFragment();
-        Bundle args = new Bundle();
-        return fragment;
-    }
     @Override
-    public void onCreate(final Bundle savedInstanceState){
+    protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
-
-        if(LoginType.equals("kakao")){
-            Log.e("loginType", "kakao");
-
-        }else if(LoginType.equals("normal")){
-            Log.e("loginType", "normal");
-
-        }else{
-
-        }
+        setContentView(R.layout.activity_write_movie_note);
+        initializer();
+        uploadButtonClick();
+        writingToolControll();
+        setAlignment();
     }
-
-    @Override
-    public View onCreateView( LayoutInflater inflater,  ViewGroup container,
-                             Bundle savedInstanceState) {
-        final View rootView = inflater.inflate(R.layout.fragment_writing, container, false);
+    public void initializer(){
         imgPath_list = new ArrayList<>();
         imgName_list =new ArrayList<>();
         imgRotate_list =new ArrayList<>();
@@ -173,53 +113,49 @@ public class writingFragment extends Fragment {
         clicked_rotate_btn = new String();
         alignment="left";
 
-        title = (EditText) rootView.findViewById(R.id.title_textarea);
-        first_text_area = (EditText) rootView.findViewById(R.id.first_text_area);
-        final ImageView keyboard_hide = (ImageView)rootView.findViewById(R.id.keyboardHide_button);
+        title = (EditText) findViewById(R.id.title_textarea);
+        first_text_area = (EditText) findViewById(R.id.first_text_area);
+        final ImageView keyboard_hide = (ImageView)findViewById(R.id.keyboardHide_button);
         keyboard_hide.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 closeKeyboard();
             }
         });
+    }
+    public void uploadButtonClick(){
+        Button upload_button =(Button) findViewById(R.id.upload_btn);
+        upload_button.setOnClickListener(new View.OnClickListener() {
 
+            @Override
+            public void onClick(View view) {
+                closeKeyboard();
 
+                AlertDialog.Builder builder = new AlertDialog.Builder(WriteMovieNoteActivity.this);
+                builder.setMessage("작성하신 내용을 '나의보관함'에만 저장하거나  또는 '공유'하시겠습니까?\n*나의보관함에 보관하면 공유되지 않습니다")
+                        .setPositiveButton("나의보관함", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialogInterface, int i) {
+                                upload_process("private");
+                            }
+                        })
+                        .setNegativeButton("나의보관함+공유", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialogInterface, int i) {
+                                upload_process("public");
+                            }
+                        })
+                        .setCancelable(true)
+                        .create()
+                        .show();
 
-        //*****************************업로드 프로세스
-                Button upload_button =(Button) rootView.findViewById(R.id.upload_btn);
-                upload_button.setOnClickListener(new View.OnClickListener() {
-
-                    @Override
-                    public void onClick(View view) {
-                         closeKeyboard();
-
-                        AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
-                        builder.setMessage("작성하신 내용을 '나의보관함'에만 저장하거나  또는 '공유'하시겠습니까?\n*나의보관함에 보관하면 공유되지 않습니다")
-                                .setPositiveButton("나의보관함", new DialogInterface.OnClickListener() {
-                                    @Override
-                                    public void onClick(DialogInterface dialogInterface, int i) {
-                                        upload_process("private");
-                                    }
-                                })
-                                .setNegativeButton("나의보관함+공유", new DialogInterface.OnClickListener() {
-                                    @Override
-                                    public void onClick(DialogInterface dialogInterface, int i) {
-                                        upload_process("public");
-                                    }
-                                })
-                                .setCancelable(true)
-                                .create()
-                                .show();
-
-                    }
-                });
-        //*****************************TExt 업로드 프로세스********************************
-
-
-        //***************************버튼을 클릭했을때 새로운 edittext area 와 imagview 가 생성되는 프로세스 *****************
-        ImageButton button = (ImageButton) rootView.findViewById(R.id.button_write);
+            }
+        });
+    }
+    public void writingToolControll(){
+        ImageButton button = (ImageButton) findViewById(R.id.button_write);
         //final LinearLayout linearLayout = (LinearLayout) rootView.findViewById(R.id.write_container);
-         linearLayout = (LinearLayout) rootView.findViewById(R.id.write_container);
+        linearLayout = (LinearLayout) findViewById(R.id.write_container);
 
         button.setOnClickListener(new View.OnClickListener() {
 
@@ -266,7 +202,7 @@ public class writingFragment extends Fragment {
                     @Override
                     public void onClick(View view) {
                         String[] tag_num = delete_button.getTag().toString().split("_");// tag_num[1] -->실재 사용할 번호
-                        View temp_view = rootView.findViewWithTag("layout_"+tag_num[1]);
+                        View temp_view = linearLayout.findViewWithTag("layout_"+tag_num[1]);
                         temp_view.setVisibility(View.GONE);
                         imgName_list.set(parseInt(tag_num[1]), "image_not_exist");
                         imgPath_list.set(parseInt(tag_num[1]), "image_not_exist");
@@ -279,7 +215,7 @@ public class writingFragment extends Fragment {
 
 
 
-             //   clicked_image_name = "button"+Integer.toString(count)+"";
+                //   clicked_image_name = "button"+Integer.toString(count)+"";
                 Log.e("button clicked", Integer.toString(count));
 
                 // 추가된 레이아웃의 로테이트 버튼을 눌렀을때 추가되는 것들
@@ -290,20 +226,20 @@ public class writingFragment extends Fragment {
                     int degree= 0;
                     @Override
                     public void onClick(View view) {
-                    Log.e("Rotate 할 이미지", "클릭티드");
-                    clicked_rotate_btn = String.valueOf(rotate_iv.getTag());
-                    String[] divider_for_num = clicked_rotate_btn.split("_");
+                        Log.e("Rotate 할 이미지", "클릭티드");
+                        clicked_rotate_btn = String.valueOf(rotate_iv.getTag());
+                        String[] divider_for_num = clicked_rotate_btn.split("_");
 
-                    ImageView temp_image = linearLayout.findViewWithTag("button_"+divider_for_num[1]);// 실재 추가한 사진이 들어있는 이미지 뷰
+                        ImageView temp_image = linearLayout.findViewWithTag("button_"+divider_for_num[1]);// 실재 추가한 사진이 들어있는 이미지 뷰
 
-                    BitmapDrawable drawable = (BitmapDrawable) temp_image.getDrawable();
-                    Bitmap bitmap = drawable.getBitmap();
-                    degree = degree+90;
-                    temp_image.setImageBitmap(rotateImage(bitmap, 90));
-                    imgRotate_list.set(parseInt(divider_for_num[1]), degree);
-                    Log.e("rotate", Integer.toString(imgRotate_list.get(parseInt(divider_for_num[1]))));
-                    Log.e("rotation height:", Integer.toString(temp_image.getHeight()));
-                    Log.e("rotation width:", Integer.toString(temp_image.getWidth()));
+                        BitmapDrawable drawable = (BitmapDrawable) temp_image.getDrawable();
+                        Bitmap bitmap = drawable.getBitmap();
+                        degree = degree+90;
+                        temp_image.setImageBitmap(rotateImage(bitmap, 90));
+                        imgRotate_list.set(parseInt(divider_for_num[1]), degree);
+                        Log.e("rotate", Integer.toString(imgRotate_list.get(parseInt(divider_for_num[1]))));
+                        Log.e("rotation height:", Integer.toString(temp_image.getHeight()));
+                        Log.e("rotation width:", Integer.toString(temp_image.getWidth()));
                     }
                 });
 
@@ -326,16 +262,12 @@ public class writingFragment extends Fragment {
                 linearLayout.addView(textView);
             }
         });
+    }
 
-
-                setAlignment(rootView);
-
-        return rootView;
-    }//OncreateView 마지막
 
 
     public void upload_process(final String public_private){
-        dialog = ProgressDialog.show(getActivity(), "", "업로드 중...", true);
+        dialog = ProgressDialog.show(this, "", "업로드 중...", true);
 
         final String whole_text = textsToOne(title.getText().toString().trim().length(), first_text_area.getText().toString().trim().length(), first_text_area.getText().toString());
         final String image_names = imageNameToString();
@@ -398,14 +330,14 @@ public class writingFragment extends Fragment {
                                 first_text_area.setText("");
 
                                 dialog.dismiss();
-                                AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+                                AlertDialog.Builder builder = new AlertDialog.Builder(WriteMovieNoteActivity.this);
                                 builder.setMessage("작성하신 글을 업로드 하였습니다.")
                                         .setPositiveButton("확인", null)
                                         .create()
                                         .show();
-                                    FragmentTransaction ft = getFragmentManager().beginTransaction();
-                                    ft.detach(writingFragment.this).attach(writingFragment.this).commit();
-                                    ft.replace(R.id.writing_fragment, writingFragment.newInstance());
+//                                FragmentTransaction ft = getFragmentManager().beginTransaction();
+//                                ft.detach(writingFragment.this).attach(writingFragment.this).commit();
+//                                ft.replace(R.id.writing_fragment, writingFragment.newInstance());
 
                             }else{
                                 Log.e("upload : ", "fail");
@@ -421,7 +353,7 @@ public class writingFragment extends Fragment {
 
                 uploadRequest_ext_writefragment writeRequest = new uploadRequest_ext_writefragment(LoggedInUser_ID, LoggedInUser_ID,
                         title.getText().toString(), whole_text, image_names, img_rotate_list, alignment, img_width_and_height, public_private, responseListener);
-                RequestQueue queue = Volley.newRequestQueue(getActivity());
+                RequestQueue queue = Volley.newRequestQueue(WriteMovieNoteActivity.this);
                 queue.add(writeRequest);
 
             }
@@ -430,7 +362,7 @@ public class writingFragment extends Fragment {
             public void onErrorResponse(VolleyError volleyError) {
                 Log.e("Message from server_2", volleyError.toString());
                 dialog.dismiss();
-                AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+                AlertDialog.Builder builder = new AlertDialog.Builder(WriteMovieNoteActivity.this);
                 builder.setMessage("작성하신 글을 업로드 하지 못했습니다.")
                         .setNegativeButton("다시시도", null)
                         .create()
@@ -441,15 +373,15 @@ public class writingFragment extends Fragment {
         jsonObjectRequest.setRetryPolicy(new DefaultRetryPolicy(5000,
                 DefaultRetryPolicy.DEFAULT_MAX_RETRIES,
                 DefaultRetryPolicy.DEFAULT_BACKOFF_MULT));
-        Volley.newRequestQueue(getActivity()).add(jsonObjectRequest);
+        Volley.newRequestQueue(WriteMovieNoteActivity.this).add(jsonObjectRequest);
 
 
         //**********************************upload image with volley by string********************
 
     }
 
-    public void setAlignment(View rootView){
-        ImageButton align_left = (ImageButton) rootView.findViewById(R.id.align_left);
+    public void setAlignment(){
+        ImageButton align_left = (ImageButton) findViewById(R.id.align_left);
         align_left.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -459,7 +391,7 @@ public class writingFragment extends Fragment {
             }
         });
 
-        ImageButton align_center = (ImageButton) rootView.findViewById(R.id.align_center);
+        ImageButton align_center = (ImageButton) findViewById(R.id.align_center);
         align_center.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -468,7 +400,7 @@ public class writingFragment extends Fragment {
                 findAlltextareaToSetAlign(17);
             }
         });
-        ImageButton align_right = (ImageButton) rootView.findViewById(R.id.align_right);
+        ImageButton align_right = (ImageButton) findViewById(R.id.align_right);
         align_right.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -577,7 +509,7 @@ public class writingFragment extends Fragment {
                 }
 
             }
-      //      Toast.makeText(getActivity(), total_story.toString(), Toast.LENGTH_LONG).show();
+            //      Toast.makeText(getActivity(), total_story.toString(), Toast.LENGTH_LONG).show();
         }else{
             //*************타이틀 텍스트 에디터가 empty일때 **************
             Log.e("is title empty?", "yes... it is empty");
@@ -589,12 +521,12 @@ public class writingFragment extends Fragment {
         for(int i= 0; i<imgRotate_list.size(); i++){
             if(i==imgRotate_list.size()-1){
                 //마지막일때
-                 stringBuilder.append(Integer.toString(imgRotate_list.get(i)));
+                stringBuilder.append(Integer.toString(imgRotate_list.get(i)));
             }else{
                 stringBuilder.append(Integer.toString(imgRotate_list.get(i))+"##$$##$$");
             }
         }
-            return stringBuilder.toString();
+        return stringBuilder.toString();
     }
     public String imageNameToString(){
         StringBuilder stringBuilder = new StringBuilder();
@@ -620,7 +552,7 @@ public class writingFragment extends Fragment {
 
         }
         return stringBuilder.toString();
-}
+    }
     public String imgWidthHeightList(){
         StringBuilder stringBuilder = new StringBuilder();
         for(int i = 0; i < img_width_height.size(); i++){
@@ -636,9 +568,9 @@ public class writingFragment extends Fragment {
     @Override
     public void onActivityResult(int requestcode, int resultcode, Intent data){
 
-        if(resultcode == getActivity().RESULT_CANCELED){
+        if(resultcode == RESULT_CANCELED){
             // only if nothing selected
-        }else if(resultcode == getActivity().RESULT_OK){
+        }else if(resultcode == RESULT_OK){
             Log.e("Request code ", Integer.toString(requestcode) +"::"+Integer.toString(resultcode));
             String imgPath= getImageNameToUri(data.getData());
             name_Str = imgPath.substring(imgPath.lastIndexOf("/")+1);// 이미지의 이름
@@ -659,7 +591,7 @@ public class writingFragment extends Fragment {
             //**************put imgpath and name of the image in arraylist *****************
             Bitmap image_bitmap = null;
             try {
-                image_bitmap = MediaStore.Images.Media.getBitmap(getActivity().getContentResolver(), data.getData());
+                image_bitmap = MediaStore.Images.Media.getBitmap(getContentResolver(), data.getData());
                 Log.e("real image height", Integer.toString(image_bitmap.getHeight()));
                 Log.e("real image width", Integer.toString(image_bitmap.getWidth()));
                 img_width_height.set(string_to_numb, Integer.toString(image_bitmap.getHeight())+"/"+Integer.toString(image_bitmap.getWidth()));
@@ -699,10 +631,10 @@ public class writingFragment extends Fragment {
         return new_name;
     }
 
-//이미지 url 가져오기
+    //이미지 url 가져오기
     public String getImageNameToUri(Uri data) {
         String[] proj = { MediaStore.Images.Media.DATA };
-        Cursor cursor = getActivity().managedQuery(data, proj, null, null, null);
+        Cursor cursor = managedQuery(data, proj, null, null, null);
         int column_index = cursor.getColumnIndexOrThrow(MediaStore.Images.Media.DATA);
         cursor.moveToFirst();
         String imgPath = cursor.getString(column_index);  // === >>> 이놈이 이미지 path 실재 이미지가 저장되어있는놈.
@@ -738,192 +670,32 @@ public class writingFragment extends Fragment {
 
     //*******************image rotate
     public Bitmap rotateImage(Bitmap src, float degree) {
-            // Matrix 객체 생성
-            Matrix matrix = new Matrix();
-            // 회전 각도 셋팅
-            matrix.postRotate(degree);
-            // 이미지와 Matrix 를 셋팅해서 Bitmap 객체 생성
-            return Bitmap.createBitmap(src, 0, 0, src.getWidth(),src.getHeight(), matrix, true);
-        }
-
-
-    //*****************************convert bitmap to file ********************
-    public File saveBitmapToFile(File file){
-        try {
-
-            // BitmapFactory options to downsize the image
-            BitmapFactory.Options o = new BitmapFactory.Options();
-            o.inJustDecodeBounds = true;
-            o.inSampleSize = 6;
-            // factor of downsizing the image
-
-            FileInputStream inputStream = new FileInputStream(file);
-            //Bitmap selectedBitmap = null;
-            BitmapFactory.decodeStream(inputStream, null, o);
-            inputStream.close();
-
-            // The new size we want to scale to
-            final int REQUIRED_SIZE=75;
-
-            // Find the correct scale value. It should be the power of 2.
-            int scale = 1;
-            while(o.outWidth / scale / 2 >= REQUIRED_SIZE &&
-                    o.outHeight / scale / 2 >= REQUIRED_SIZE) {
-                scale *= 2;
-            }
-
-            BitmapFactory.Options o2 = new BitmapFactory.Options();
-            o2.inSampleSize = scale;
-            inputStream = new FileInputStream(file);
-
-            Bitmap selectedBitmap = BitmapFactory.decodeStream(inputStream, null, o2);
-            inputStream.close();
-
-            // here i override the original image file
-            file.createNewFile();
-            FileOutputStream outputStream = new FileOutputStream(file);
-
-            selectedBitmap.compress(Bitmap.CompressFormat.JPEG, 100 , outputStream);
-
-            return file;
-        } catch (Exception e) {
-            return null;
-        }
+        // Matrix 객체 생성
+        Matrix matrix = new Matrix();
+        // 회전 각도 셋팅
+        matrix.postRotate(degree);
+        // 이미지와 Matrix 를 셋팅해서 Bitmap 객체 생성
+        return Bitmap.createBitmap(src, 0, 0, src.getWidth(),src.getHeight(), matrix, true);
     }
 
 
 
-//*********************** file uploader ******************************** OUTDATED --> ALTERNATIVE --> VOLLEY
-//    public int uploadFile(String sourceFileUri, String image_Name) {
-//        String fileName = sourceFileUri;
-//        String imageName = image_Name;
-//        HttpURLConnection conn = null;
-//        DataOutputStream dos = null;
-//        String lineEnd = "\r\n";
-//        String twoHyphens = "--";
-//        String boundary = "*****";
-//        int bytesRead, bytesAvailable, bufferSize;
-//        byte[] buffer;
-//        int maxBufferSize = 100 * 1024 * 1024;
-//        File sourceFile = new File(sourceFileUri);
-//
-//    //    File sourceFile = saveBitmapToFile(sourceFile_temp);
-//        Log.e("결과", sourceFile.getAbsolutePath()+"/////"+String.valueOf(sourceFile.length()/1024));
-//
-//        if (!sourceFile.isFile()) {
-//            dialog.dismiss();
-//            getActivity().runOnUiThread(new Runnable() {
-//                public void run() {
-//                    Log.e("if file is not a file", "it is not a file");
-//                }
-//            });
-//            return 0;
-//        }else {
-//            try {
-//                // open a URL connection to the Servlet
-//
-//                FileInputStream fileInputStream = new FileInputStream(sourceFile);
-//                URL url = new URL(upLoadServerUri);
-//                // Open a HTTP  connection to  the URL
-//                conn = (HttpURLConnection) url.openConnection();
-//                conn.setDoInput(true); // Allow Inputs
-//                conn.setDoOutput(true); // Allow Outputs
-//                conn.setUseCaches(false); // Don't use a Cached Copy
-//                conn.setRequestMethod("POST");
-//                conn.setRequestProperty("Connection", "Keep-Alive");
-//                conn.setRequestProperty("ENCTYPE", "multipart/form-data");
-//                conn.setRequestProperty("Content-Type", "multipart/form-data;boundary=" + boundary);
-//                conn.setRequestProperty("uploaded_file", fileName);
-//                conn.setRequestProperty("imageName", imageName);
-//
-//                dos = new DataOutputStream(conn.getOutputStream());
-//
-//
-//                dos.writeBytes(twoHyphens + boundary + lineEnd);
-//                dos.writeBytes("Content-Disposition: form-data; name=\"uploaded_file\";filename=\"" + fileName + "\"" + lineEnd);
-//                dos.writeBytes(lineEnd);
-//                //  위는 파일
-//
-//                // create a buffer of  maximum size
-//                bytesAvailable = fileInputStream.available();
-//                bufferSize = Math.min(bytesAvailable, maxBufferSize);
-//                buffer = new byte[bufferSize];
-//                // read file and write it into form...
-//                bytesRead = fileInputStream.read(buffer, 0, bufferSize);
-//                while (bytesRead > 0) {
-//                    dos.write(buffer, 0, bufferSize);
-//                    bytesAvailable = fileInputStream.available();
-//                    bufferSize = Math.min(bytesAvailable, maxBufferSize);
-//                    bytesRead = fileInputStream.read(buffer, 0, bufferSize);
-//                }
-//                // send multipart form data necesssary after file data...
-//                dos.writeBytes(lineEnd);
-//
-//
-//                dos.writeBytes(twoHyphens + boundary + lineEnd);
-//                dos.writeBytes("Content-Disposition: form-data; name=\"imageName\"" + lineEnd);
-//                dos.writeBytes(lineEnd);
-//                dos.writeBytes(imageName);
-//                dos.writeBytes(lineEnd);
-//                // 위는 text
-//
-//
-//
-//
-//                dos.writeBytes(twoHyphens + boundary + twoHyphens + lineEnd);
-//                // Responses from the server (code and message)
-//                serverResponseCode = conn.getResponseCode();
-//                String serverResponseMessage = conn.getResponseMessage();
-//                Log.i("uploadFile", "HTTP Response is : " + serverResponseMessage + ": " + serverResponseCode);
-//                if(serverResponseCode == 200){
-//                    getActivity().runOnUiThread(new Runnable() {
-//                        public void run() {
-//                            //************this is when upload successfully completed
-//
-//                 Log.e("uploaded file status", "file upload successfully");
-//
-//                        }
-//                    });
-//                }
-//
-//                //close the streams //
-//                fileInputStream.close();
-//                dos.flush();
-//                dos.close();
-//            } catch (MalformedURLException ex) {
-//                dialog.dismiss();
-//                ex.printStackTrace();
-//                getActivity().runOnUiThread(new Runnable() {
-//                    public void run() {
-//
-//                        // 잘못된 url 일때
-////                        TextView welcometext = (TextView) findViewById(R.id.welcomeText);
-////                        welcometext.setText("MalformedURLException Exception : check script url.");
-////                        Toast.makeText(WriteActivity.this, "MalformedURLException",
-////                                Toast.LENGTH_SHORT).show();
-//                    }
-//                });
-//                Log.e("Upload file to server", "error: " + ex.getMessage(), ex);
-//            } catch (final Exception e) {
-//                dialog.dismiss();
-//                e.printStackTrace();
-//                getActivity().runOnUiThread(new Runnable() {
-//                    public void run() {
-//                        //***************got exception see logcat *********************
-////                        messageText.setText("Got Exception : see logcat ");
-////                        Toast.makeText(WriteActivity.this, "Got Exception : see logcat ", Toast.LENGTH_SHORT).show();
-////                        TextView welcometext = (TextView) findViewById(R.id.welcomeText);
-////
-////                        welcometext.setText(e.getStackTrace().toString());
-//                        //Toast.makeText(WriteActivity.this, e.getMessage().toString() + e.getStackTrace().toString(), Toast.LENGTH_LONG).show();
-//                    }
-//                });
-//                Log.e("Exception", "Exception : " + e.getMessage(), e);
-//            }
-//            dialog.dismiss();
-//            return serverResponseCode;
-//        } // End else block
-//
-//    }
 
+    private void closeKeyboard(){
+        View view = getCurrentFocus();
+        if(view !=null){
+            InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
+            imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
+        }
+    }
+    public String IntToString(int input){
+        String output = Integer.toString(input);
+        return output;
+    }
+    public static int getScreenWidth() {
+        return Resources.getSystem().getDisplayMetrics().widthPixels;
+    }
+    public static int getScreenHeight() {
+        return Resources.getSystem().getDisplayMetrics().heightPixels;
+    }
 }

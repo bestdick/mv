@@ -5,6 +5,8 @@ import android.content.Context;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.provider.DocumentsContract;
+import android.support.constraint.ConstraintLayout;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
 import android.text.Html;
@@ -13,6 +15,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.android.volley.Request;
@@ -129,7 +132,9 @@ public class YoutubeFragment extends Fragment {
                 youTubePlayer.setShowFullscreenButton(false);
 //                youTubePlayer.setPlayerStyle(YouTubePlayer.PlayerStyle.MINIMAL);
                 youTubePlayer.loadVideo(youtubeUrlList.get(rand_num));
-                youTubePlayer.play();
+//                youTubePlayer.play();
+
+                actionYoutubePlayerDescriptionDrop(rootview);
 
             }
 
@@ -142,6 +147,25 @@ public class YoutubeFragment extends Fragment {
         FragmentTransaction transaction = getChildFragmentManager().beginTransaction();
         transaction.add(R.id.youtube_fragment, youTubePlayerFragment).commit();
     }
+
+    public void actionYoutubePlayerDescriptionDrop(final View rootview){
+        ImageView drop_imageView = (ImageView) rootview.findViewById(R.id.drop_imageView);
+        ConstraintLayout basic_info_conLayout = (ConstraintLayout) rootview.findViewById(R.id.basic_info_conLayout);
+        basic_info_conLayout.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                ConstraintLayout description_conLayout = (ConstraintLayout) rootview.findViewById(R.id.description_conLayout);
+                if(description_conLayout.getVisibility() == View.GONE ||description_conLayout.getVisibility() == View.INVISIBLE){
+                    description_conLayout.setVisibility(View.VISIBLE);
+                }else{
+                    description_conLayout.setVisibility(View.GONE);
+                }
+
+
+            }
+        });
+    }
+
     public class youtube_channel_list  extends AsyncTask<Void, Void, String> {
         private static final String api_key ="AIzaSyB-pAa9jDHKaodHZdJjvUFA13bx-VMalP4";
         View rootview;

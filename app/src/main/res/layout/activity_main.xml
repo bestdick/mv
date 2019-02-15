@@ -24,6 +24,7 @@
             android:layout_height="match_parent">
 
             <TextView
+                android:id="@+id/toolbar_title_textView"
                 android:layout_width="0dp"
                 android:layout_height="0dp"
                 android:layout_marginEnd="16dp"
@@ -32,7 +33,7 @@
                 app:layout_constraintStart_toStartOf="parent"
                 android:textSize="24sp"
                 android:fontFamily="monospace"
-                android:text="#목록"
+                android:text="#유튜브"
                 android:gravity="center_vertical"
                 app:layout_constraintTop_toTopOf="parent" />
 

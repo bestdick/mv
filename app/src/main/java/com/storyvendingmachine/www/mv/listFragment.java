@@ -75,16 +75,31 @@ public class listFragment extends Fragment{
 
     TextView selectionTextView_1, selectionCountTextView_1,selectionTextView_2, selectionCountTextView_2;
 
+    // TODO: Rename parameter arguments, choose names that match
+    // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
+    private static final String ARG_PARAM1 = "param1";
+    private static final String ARG_PARAM2 = "param2";
 
-    public static listFragment newInstance() {
+    // TODO: Rename and change types of parameters
+    private String mParam1;
+    private String mParam2;
+
+    public static listFragment newInstance(String param1, String param2) {
         listFragment fragment = new listFragment();
         Bundle args = new Bundle();
+        args.putString(ARG_PARAM1, param1);
+        args.putString(ARG_PARAM2, param2);
+        fragment.setArguments(args);
         return fragment;
     }
     @Override
     public void onCreate(final Bundle savedInstanceState){
         super.onCreate(savedInstanceState);
         setHasOptionsMenu(true); //fragment 에서 toolbar menu 를 사용하기 위해서는 꼭 필수적으로해야한다
+        if (getArguments() != null) {
+            mParam1 = getArguments().getString(ARG_PARAM1);
+            mParam2 = getArguments().getString(ARG_PARAM2);
+        }
 
         list_selection = "my_list";
         total_my_list ="";

@@ -59,7 +59,8 @@
         <activity android:name=".JoinActivity" />
         <activity android:name=".UserInfoSetting" />
         <activity android:name=".BoxOfficeActivity" />
-        <activity android:name=".WriteActivity"></activity>
+        <activity android:name=".WriteActivity" />
+        <activity android:name=".WriteMovieNoteActivity"></activity>
     </application>
 
 </manifest>
