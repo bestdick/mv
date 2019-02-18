@@ -15,9 +15,11 @@ import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.widget.Toolbar;
 import android.util.Base64;
 import android.util.Log;
 import android.view.Gravity;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
@@ -94,10 +96,19 @@ public class WriteMovieNoteActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_write_movie_note);
+        toolbar();
         initializer();
         uploadButtonClick();
         writingToolControll();
         setAlignment();
+    }
+    public void toolbar(){
+        Toolbar myToolbar = (Toolbar) findViewById(R.id.my_toolbar);
+        setSupportActionBar(myToolbar);
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        getSupportActionBar().setTitle("menu_button");
+        getSupportActionBar().setHomeAsUpIndicator(R.drawable.icon_close);
+        getSupportActionBar().setTitle("");  //해당 액티비티의 툴바에 있는 타이틀을 공백으로 처리
     }
     public void initializer(){
         imgPath_list = new ArrayList<>();
@@ -609,7 +620,20 @@ public class WriteMovieNoteActivity extends AppCompatActivity {
         }
 
     }
-
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        onBackPressed();
+        return true;
+    }
+    @Override
+    public void onBackPressed() {
+        //this is only needed if you have specific things
+        //that you want to do when the user presses the back button.
+        /* your specific things...*/
+        super.onBackPressed();
+        finish();
+        overridePendingTransition(R.anim.slide_right_bit,R.anim.slide_out);// first entering // second exiting
+    }
     ///**********************to make image name unique *****************
     public String make_image_name_unique(String ori_name){
         String[] temp = ori_name.split("\\.");

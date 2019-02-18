@@ -15,7 +15,9 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.WindowManager;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.android.volley.Request;
@@ -27,6 +29,7 @@ import com.android.volley.toolbox.Volley;
 import com.google.android.youtube.player.YouTubeInitializationResult;
 import com.google.android.youtube.player.YouTubePlayer;
 import com.google.android.youtube.player.YouTubePlayerSupportFragment;
+import com.squareup.picasso.Picasso;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -42,6 +45,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Random;
 
+import static com.storyvendingmachine.www.mv.MainActivity.pb;
 import static com.storyvendingmachine.www.mv.MainActivity.screen;
 
 
@@ -57,7 +61,7 @@ public class YoutubeFragment extends Fragment {
 
     YouTubePlayerSupportFragment youTubePlayerFragment;
     YouTubePlayer.OnInitializedListener listener;
-    String youtuber;
+//    String youtuber;
     ArrayList<String> youtubeUrlList;
     ArrayList<String> youtubeTitleList;
     ArrayList<String> youtubeDescriptionList;
@@ -70,6 +74,7 @@ public class YoutubeFragment extends Fragment {
     int rand_number;
     Random r;
 
+    static String nextPageToken;
 
     /**
      * Use this factory method to create a new instance of
@@ -103,7 +108,8 @@ public class YoutubeFragment extends Fragment {
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         View rootview = inflater.inflate(R.layout.fragment_youtube, container, false);
-        youtuber="";
+        nextPageToken = "";
+//        youtuber="";
         youtubeUrlList = new ArrayList<>();
         youtubeTitleList = new ArrayList<>();
         youtubeDescriptionList = new ArrayList<>();
@@ -111,33 +117,28 @@ public class YoutubeFragment extends Fragment {
         youtubeThumbnail = new ArrayList<>();
         r = new Random();
         getYoutubeAddress(rootview);
+        progressbar_visible();
         return rootview;
     }
 
-
-    public void youtube(final int rand_num, final View rootview){
-//        YouTubePlayerSupportFragment youTubePlayerFragment = YouTubePlayerSupportFragment.newInstance();
+    public void playYoutubeVideo(final View rootview, final String youtuber, final String video_id, final String video_title, final String video_description){
         youTubePlayerFragment = YouTubePlayerSupportFragment.newInstance();
         youTubePlayerFragment.initialize("AIzaSyCtICWDaIimwYlVC6tkiUxa9d7ZswS0zP4", new YouTubePlayer.OnInitializedListener() {
             @Override
             public void onInitializationSuccess(YouTubePlayer.Provider provider, YouTubePlayer youTubePlayer, boolean b) {
-                Log.e("Name of Screen", Integer.toString(screen));
                 TextView youtuber_youtube_textView = (TextView) rootview.findViewById(R.id.youtuber_youtube_textView);
                 TextView youtubeTitleTextView = (TextView) rootview.findViewById(R.id.title_youtube_textView);
                 TextView youtubeDescriptionTextView = (TextView) rootview.findViewById(R.id.description_youtube_textView);
+
                 youtuber_youtube_textView.setText(youtuber);
-                youtubeTitleTextView.setText("[유튜브 영상 제목]" + youtubeTitleList.get(rand_num));
-//                Spanned description = Html.fromHtml(youtubeDescriptionList.get(rand_num));
-                youtubeDescriptionTextView.setText(youtubeDescriptionList.get(rand_num));
+                youtubeTitleTextView.setText("[유튜브 영상 제목]\n" + video_title);
+                youtubeDescriptionTextView.setText(video_description);
+
                 youTubePlayer.setShowFullscreenButton(false);
-//                youTubePlayer.setPlayerStyle(YouTubePlayer.PlayerStyle.MINIMAL);
-                youTubePlayer.loadVideo(youtubeUrlList.get(rand_num));
-//                youTubePlayer.play();
-
+                youTubePlayer.cueVideo(video_id);
                 actionYoutubePlayerDescriptionDrop(rootview);
-
+                progressbar_invisible();
             }
-
             @Override
             public void onInitializationFailure(YouTubePlayer.Provider provider, YouTubeInitializationResult youTubeInitializationResult) {
                 Log.e("Name of Screen", "초기화 실패");
@@ -165,7 +166,269 @@ public class YoutubeFragment extends Fragment {
             }
         });
     }
+    public void getYoutubeAddress(final View rootview){
+        RequestQueue queue = Volley.newRequestQueue(getContext());
+//        String url = "http://www.joonandhoon.com/jhmovienote/youtube_url_list.php";
+        String url = "http://www.joonandhoon.com/jhmovienote/YoutuberList.php";
+        StringRequest stringRequest = new StringRequest(Request.Method.POST, url,
+                new Response.Listener<String>() {
+                    @Override
+                    public void onResponse(String response) {
+                        Log.e("youtube list", response);
+                        try {
+                            JSONObject jsonObject = new JSONObject(response);
+                            String RandYoutuber = jsonObject.getJSONObject("response_1").getString("youtuber");
+                            String video_id =jsonObject.getJSONObject("response_1").getString("video_id");
+                            String video_title = jsonObject.getJSONObject("response_1").getString("video_title");
+                            String video_description = jsonObject.getJSONObject("response_1").getString("video_description");
+                            playYoutubeVideo(rootview, RandYoutuber, video_id, video_title, video_description);
+//                            youtuber= jsonObject.getJSONObject("response_1").getString("author");
+//                            String url = jsonObject.getJSONObject("response_1").getString("url");
+//                            youtube_channel_list get_youtube_channel_list = new youtube_channel_list();
+//                            get_youtube_channel_list.rootview =rootview;
+//                            get_youtube_channel_list.channel_url=url;
+//                            get_youtube_channel_list.execute();
+                            // ************************** below ******************************
+                            // get each youtuber list and make list
+                            //
+                            LinearLayout youtuber_list_container = (LinearLayout) rootview.findViewById(R.id.youtuber_list_container);
+                            final LinearLayout selectedYoutuberListContainer = (LinearLayout) rootview.findViewById(R.id.list_container);
+                            final LinearLayout selectedYoutuberListFooterContainer = (LinearLayout) rootview.findViewById(R.id.footer_container);
+                            JSONArray jsonArray = jsonObject.getJSONArray("response_2");
+                            final int views_count = jsonArray.length();
+                            for(int i = 0 ; i < jsonArray.length(); i++){
+                                View youtuber_element_view = getLayoutInflater().inflate(R.layout.container_youtuber_name, null);
+                                final TextView youtuber_name_textView = (TextView) youtuber_element_view.findViewById(R.id.youtuber_name_textView);
+                                youtuber_name_textView.setId(i);
+                                String youtuber  = jsonArray.getJSONObject(i).getString("youtuber");
+                                final String channel_id = jsonArray.getJSONObject(i).getString("channel_id");
+                                youtuber_name_textView.setText(youtuber);
+                                youtuber_list_container.addView(youtuber_element_view);
 
+                                youtuber_element_view.setOnClickListener(new View.OnClickListener() {
+                                    @Override
+                                    public void onClick(View view) {
+                                        for(int j = 0 ; j < views_count; j++){
+                                            TextView temp_textView = (TextView) getView().findViewById(j);
+                                            temp_textView.setTextColor(getResources().getColor(R.color.colorGrey));
+                                        }
+                                        selectedYoutuberListContainer.removeAllViews();
+                                        selectedYoutuberListFooterContainer.removeAllViews();
+
+                                        youtuber_name_textView.setTextColor(getResources().getColor(R.color.colorCrimsonRed));
+
+                                        View footer_view = getLayoutInflater().inflate(R.layout.container_footer_progress, null);
+                                        selectedYoutuberListFooterContainer.addView(footer_view);
+
+                                        GetSelectedYoutuberSMovieList task = new GetSelectedYoutuberSMovieList();
+                                        task.channel_url = channel_id;
+                                        task.container = selectedYoutuberListContainer;
+                                        task.rootview = rootview;
+                                        task.execute();
+
+                                        footer_view.setOnClickListener(new View.OnClickListener() {
+                                            @Override
+                                            public void onClick(View view) {
+                                                progressbar_visible();
+                                                GetSelectedYoutuberSMovieList task = new GetSelectedYoutuberSMovieList();
+                                                task.channel_url = channel_id;
+                                                task.container = selectedYoutuberListContainer;
+                                                task.rootview = rootview;
+                                                task.execute();
+                                            }
+                                        });
+                                    }
+                                });
+
+                                if(i==0){
+                                    View footer_view = getLayoutInflater().inflate(R.layout.container_footer_progress, null);
+                                    selectedYoutuberListFooterContainer.addView(footer_view);
+
+                                    youtuber_name_textView.setTextColor(getResources().getColor(R.color.colorCrimsonRed));
+                                    GetSelectedYoutuberSMovieList task = new GetSelectedYoutuberSMovieList();
+                                    task.channel_url = channel_id;
+                                    task.container = selectedYoutuberListContainer;
+                                    task.rootview = rootview;
+                                    task.execute();
+
+                                    footer_view.setOnClickListener(new View.OnClickListener() {
+                                        @Override
+                                        public void onClick(View view) {
+                                            progressbar_visible();
+                                            GetSelectedYoutuberSMovieList task = new GetSelectedYoutuberSMovieList();
+                                            task.channel_url = channel_id;
+                                            task.container = selectedYoutuberListContainer;
+                                            task.rootview = rootview;
+                                            task.execute();
+                                        }
+                                    });
+                                }
+                            }
+
+
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                            Log.e("youtube_url", e.toString());
+                        }
+
+                    }
+                },
+                new Response.ErrorListener() {
+                    @Override
+                    public void onErrorResponse(VolleyError error) {
+                        Log.e("volley error", error.toString());
+                    }
+                }
+        ) {
+            @Override
+            protected Map<String, String> getParams(){
+                Map<String, String> params = new HashMap<String, String>();
+
+                return params;
+            }
+        };
+        queue.add(stringRequest);
+    }
+    public class GetSelectedYoutuberSMovieList  extends AsyncTask<Void, Void, String> {
+        private static final String api_key ="AIzaSyB-pAa9jDHKaodHZdJjvUFA13bx-VMalP4";
+        View rootview;
+        String channel_url;
+        LinearLayout container;
+
+
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+
+        }
+
+        @Override
+        protected String doInBackground(Void... voids) {
+                String target ="https://www.googleapis.com/youtube/v3/activities?part=snippet,contentDetails&channelId="+channel_url+"&key="+api_key+"&maxResults=5&pageToken="+nextPageToken;
+
+            try{
+                URL url = new URL(target);
+                HttpURLConnection httpURLConnection = (HttpURLConnection) url.openConnection();
+                InputStream inputStream = httpURLConnection.getInputStream();
+                BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(inputStream));
+                String temp;
+                StringBuilder stringBuilder = new StringBuilder();
+                while((temp =bufferedReader.readLine())!=null){
+                    stringBuilder.append(temp + "\n");
+                }
+                bufferedReader.close();
+                inputStream.close();
+                httpURLConnection.disconnect();
+                return stringBuilder.toString().trim();
+            }catch (Exception e){
+                e.printStackTrace();
+            }
+            return null;
+
+        }
+
+        @Override
+        protected void onPostExecute(String result) {
+            super.onPostExecute(result);
+            try {
+                JSONObject jsonObject = new JSONObject(result);
+                JSONArray jsonArray = jsonObject.getJSONArray("items");
+                nextPageToken = jsonObject.getString("nextPageToken");
+                for(int i = 0; i<jsonArray.length(); i++){
+                    JSONObject temp1 = jsonArray.getJSONObject(i);
+                    String title = temp1.getJSONObject("snippet").getString("title");
+                    Log.e("test selected yt list", title);
+                    String description = temp1.getJSONObject("snippet").getString("description");
+                    // thumbnail
+                    String thumbnail_url = temp1.getJSONObject("snippet").getJSONObject("thumbnails").getJSONObject("high").getString("url");
+                    String thumbnail_width = temp1.getJSONObject("snippet").getJSONObject("thumbnails").getJSONObject("high").getString("width");
+                    String thumbnail_height = temp1.getJSONObject("snippet").getJSONObject("thumbnails").getJSONObject("high").getString("height");
+
+                    //*************************  youtube video url ******************
+                    String video_url = "";
+                    JSONObject temp2 = temp1.getJSONObject("contentDetails");
+                    if(temp2.isNull("upload")){
+                        JSONObject temp3 = temp2.getJSONObject("playlistItem");
+                        JSONObject temp4 = temp3.getJSONObject("resourceId");
+                        video_url = temp4.getString("videoId");
+                        Log.e("videoid" , temp4.getString("videoId"));
+                    }else{
+                        JSONObject temp3 = temp2.getJSONObject("upload");
+                        video_url = temp3.getString("videoId");
+                        Log.e("videoId", temp3.getString("videoId"));
+                    }
+                    View youtuber_element_container = getLayoutInflater().inflate(R.layout.container_youtuber_list, null);
+                    ImageView youtube_thumbnail_imageView = (ImageView) youtuber_element_container.findViewById(R.id.youtube_thumbnail_imageView);
+                    TextView youtube_title_textView = (TextView) youtuber_element_container.findViewById(R.id.youtube_title_textView);
+                    youtube_title_textView.setText(title);
+                    load_image(thumbnail_url, youtube_thumbnail_imageView);
+                    container.addView(youtuber_element_container);
+                    progressbar_invisible();
+                }
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+
+
+        }
+        public void load_image(String url, ImageView view){
+            Picasso.with(getContext())
+                    .load(url)
+                    .fit()
+                    .into(view, new com.squareup.picasso.Callback() {
+                @Override
+                public void onSuccess() {
+                    Log.e("loadImageFromUrl", "success");
+
+                }
+                @Override
+                public void onError() {
+                    Log.e("load image", "fail to load images ");
+                }
+            });
+        }
+    }
+
+
+    public void progressbar_visible(){
+        pb.setVisibility(View.VISIBLE);
+        getActivity().getWindow().setFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE, WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE);
+    }
+    public void progressbar_invisible(){
+        getActivity().getWindow().clearFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE);
+        pb.setVisibility(View.INVISIBLE);
+    }
+// outdated functions and class
+    public void youtube(final int rand_num, final View rootview){
+//        YouTubePlayerSupportFragment youTubePlayerFragment = YouTubePlayerSupportFragment.newInstance();
+        youTubePlayerFragment = YouTubePlayerSupportFragment.newInstance();
+        youTubePlayerFragment.initialize("AIzaSyCtICWDaIimwYlVC6tkiUxa9d7ZswS0zP4", new YouTubePlayer.OnInitializedListener() {
+            @Override
+            public void onInitializationSuccess(YouTubePlayer.Provider provider, YouTubePlayer youTubePlayer, boolean b) {
+                Log.e("Name of Screen", Integer.toString(screen));
+                TextView youtuber_youtube_textView = (TextView) rootview.findViewById(R.id.youtuber_youtube_textView);
+                TextView youtubeTitleTextView = (TextView) rootview.findViewById(R.id.title_youtube_textView);
+                TextView youtubeDescriptionTextView = (TextView) rootview.findViewById(R.id.description_youtube_textView);
+//                youtuber_youtube_textView.setText(youtuber);
+                youtubeTitleTextView.setText("[유튜브 영상 제목]" + youtubeTitleList.get(rand_num));
+                youtubeDescriptionTextView.setText(youtubeDescriptionList.get(rand_num));
+                youTubePlayer.setShowFullscreenButton(false);
+//                youTubePlayer.setPlayerStyle(YouTubePlayer.PlayerStyle.MINIMAL);
+                youTubePlayer.cueVideo(youtubeUrlList.get(rand_num));
+//                youTubePlayer.loadVideo(youtubeUrlList.get(rand_num));
+//                youTubePlayer.play();
+
+                actionYoutubePlayerDescriptionDrop(rootview);
+            }
+            @Override
+            public void onInitializationFailure(YouTubePlayer.Provider provider, YouTubeInitializationResult youTubeInitializationResult) {
+                Log.e("Name of Screen", "초기화 실패");
+
+            }
+        });
+        FragmentTransaction transaction = getChildFragmentManager().beginTransaction();
+        transaction.add(R.id.youtube_fragment, youTubePlayerFragment).commit();
+    }
     public class youtube_channel_list  extends AsyncTask<Void, Void, String> {
         private static final String api_key ="AIzaSyB-pAa9jDHKaodHZdJjvUFA13bx-VMalP4";
         View rootview;
@@ -178,7 +441,7 @@ public class YoutubeFragment extends Fragment {
 
         @Override
         protected String doInBackground(Void... voids) {
-            String target ="https://www.googleapis.com/youtube/v3/activities?part=snippet,contentDetails&channelId="+channel_url+"&key="+api_key+"&maxResults=5";
+            String target ="https://www.googleapis.com/youtube/v3/activities?part=snippet,contentDetails&channelId="+channel_url+"&key="+api_key+"&maxResults=50";
             try{
                 URL url = new URL(target);
                 HttpURLConnection httpURLConnection = (HttpURLConnection) url.openConnection();
@@ -235,52 +498,4 @@ public class YoutubeFragment extends Fragment {
 
 
     }
-    public void getYoutubeAddress(final View rootview){
-
-        RequestQueue queue = Volley.newRequestQueue(getContext());
-        String url = "http://www.joonandhoon.com/jhmovienote/youtube_url_list.php";
-        StringRequest stringRequest = new StringRequest(Request.Method.POST, url,
-                new Response.Listener<String>() {
-                    @Override
-                    public void onResponse(String response) {
-                        try {
-
-                            JSONObject jsonObject = new JSONObject(response);
-                            JSONArray jsonArray = jsonObject.getJSONArray("response");
-                            JSONObject temp = jsonArray.getJSONObject(0);
-                            youtuber=temp.getString("author");
-                            String url = temp.getString("url");
-
-
-                            youtube_channel_list get_youtube_channel_list = new youtube_channel_list();
-                            get_youtube_channel_list.rootview =rootview;
-                            get_youtube_channel_list.channel_url=url;
-                            get_youtube_channel_list.execute();
-
-
-                        } catch (JSONException e) {
-                            e.printStackTrace();
-                            Log.e("youtube_url", e.toString());
-                        }
-
-                    }
-                },
-                new Response.ErrorListener() {
-                    @Override
-                    public void onErrorResponse(VolleyError error) {
-                        Log.e("volley error", error.toString());
-                    }
-                }
-        ) {
-            @Override
-            protected Map<String, String> getParams(){
-                Map<String, String> params = new HashMap<String, String>();
-
-                return params;
-            }
-        };
-        queue.add(stringRequest);
-
-    }
-
 }

@@ -52,27 +52,14 @@ public class UserInfoSetting extends AppCompatActivity {
 
     }
 
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        onBackPressed();
-        return true;
-    }
-    @Override
-    public void onBackPressed() {
-        //this is only needed if you have specific things
-        //that you want to do when the user presses the back button.
-        /* your specific things...*/
-        super.onBackPressed();
-        finish();
-        overridePendingTransition(R.anim.slide_right_bit,R.anim.slide_out);// first entering // second exiting
-    }
+
 
     public void get_toolbar(){
         myToolbar = (Toolbar) findViewById(R.id.my_toolbar);
         setSupportActionBar(myToolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setTitle("menu_button");
-        getSupportActionBar().setHomeAsUpIndicator(R.drawable.back_button);
+        getSupportActionBar().setHomeAsUpIndicator(R.drawable.icon_close);
         getSupportActionBar().setTitle("");  //해당 액티비티의 툴바에 있는 타이틀을 공백으로 처리
     }
     public void get_info(){
@@ -107,7 +94,10 @@ public class UserInfoSetting extends AppCompatActivity {
 
     }
     private void loadImageFromUrl(String url, ImageView view) {
-        Picasso.with(this).load(url).into(view, new com.squareup.picasso.Callback() {
+        Picasso.with(this)
+                .load(url)
+                .transform(new CircleTransform())
+                .into(view, new com.squareup.picasso.Callback() {
             @Override
             public void onSuccess() {
                 Log.e("loadImageFromUrl", "success");
@@ -188,5 +178,20 @@ public class UserInfoSetting extends AppCompatActivity {
             super.onPostExecute(result);
 
         }
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        onBackPressed();
+        return true;
+    }
+    @Override
+    public void onBackPressed() {
+        //this is only needed if you have specific things
+        //that you want to do when the user presses the back button.
+        /* your specific things...*/
+        super.onBackPressed();
+        finish();
+        overridePendingTransition(R.anim.slide_right_bit,R.anim.slide_out);// first entering // second exiting
     }
 }

@@ -4,6 +4,7 @@ import android.Manifest;
 import android.app.Activity;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.NavigationView;
 import android.support.design.widget.TabLayout;
 import android.support.v4.app.ActivityCompat;
@@ -20,6 +21,7 @@ import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.ViewParent;
 import android.view.WindowManager;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
@@ -34,11 +36,14 @@ import com.squareup.picasso.Picasso;
 import static android.view.KeyEvent.KEYCODE_VOLUME_DOWN;
 import static android.view.KeyEvent.KEYCODE_VOLUME_UP;
 import static com.storyvendingmachine.www.mv.LoginActivity.callback;
+import static com.storyvendingmachine.www.mv.REQUESTCODES.REQUEST_CODE_WRITE;
 import static com.storyvendingmachine.www.mv.mainFragment.volumeFlag;
 import static com.storyvendingmachine.www.mv.mainFragment.volume_mute;
 
 
-public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener  {
+public class MainActivity extends AppCompatActivity{
+//        implements NavigationView.OnNavigationItemSelectedListener  {
+
 
     static String LoginType;
     static String LoggedInUser_ID;
@@ -63,13 +68,14 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
 
     TextView toolbar_title_textView;
-
+    static com.melnykov.fab.FloatingActionButton fab;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         pb = (ProgressBar) findViewById(R.id.mainactivity_pb);
         toolbar_title_textView = (TextView) findViewById(R.id.toolbar_title_textView);
+        fab = (com.melnykov.fab.FloatingActionButton) findViewById(R.id.floating_action_button);
 
                 //permission
         ActivityCompat.requestPermissions(MainActivity.this, new String[]{Manifest.permission.READ_EXTERNAL_STORAGE}, 0);
@@ -90,7 +96,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             //Toast.makeText(MainActivity.this, "normal login", Toast.LENGTH_LONG).show();
             LoggedInUser_ID = intent.getStringExtra("user_email");
             LoggedInUser_nickname = intent.getStringExtra("user_nickname");
-            LoggedInUser_thumbnail = null;
+            LoggedInUser_thumbnail = intent.getStringExtra("user_thumbnail");
 
         }else{
             Toast.makeText(MainActivity.this, "else login", Toast.LENGTH_LONG).show();
@@ -103,6 +109,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         mViewPager = (ViewPager) findViewById(R.id.container);
         mViewPager.setAdapter(mViewPagerAdapter);
         mViewPager.setOffscreenPageLimit(5);
+        mViewPager.setPageMargin(16);
 
         mViewPager.addOnPageChangeListener(new ViewPager.OnPageChangeListener(){
             @Override
@@ -115,23 +122,28 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 switch(position) {
                     case 0:
                         toolbar_title_textView.setText("#유튜브");
+                        fab.setVisibility(View.GONE);
                         Log.e("page", "일입니다");
                         break;
                     case 1:
                         toolbar_title_textView.setText("#박스오피스");
+                        fab.setVisibility(View.GONE);
                         Log.e("page", "이입니다");
                         break;
                     case 2:
                         toolbar_title_textView.setText("#마이리스트");
+                        fab.setVisibility(View.VISIBLE);
                         Log.e("page", "삼입니다");
                         break;
                     case 3:
                         toolbar_title_textView.setText("#영화리스트");
+                        fab.setVisibility(View.VISIBLE);
                         Log.e("page", "사입니다");
                         break;
                     default:
                         //switch 5
                         toolbar_title_textView.setText("#ETC");
+                        fab.setVisibility(View.GONE);
                         Log.e("page", "오입니다");
                         break;
                 }
@@ -146,18 +158,19 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
 
 //drawer navigation 초기 설정
-        drawer = (DrawerLayout) findViewById(R.id.drawer);
+//        drawer = (DrawerLayout) findViewById(R.id.drawer);
 //drawer navigation 초기 설정
 
         //handling navigation view item event
-        NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
-        navigationView.setNavigationItemSelectedListener(this);
+//        NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
+//        navigationView.setNavigationItemSelectedListener(this);
 
         TabLayout tabLayout = (TabLayout) findViewById(R.id.tabLayout);
         mViewPager.addOnPageChangeListener(new TabLayout.TabLayoutOnPageChangeListener(tabLayout));
         tabLayout.addOnTabSelectedListener(new TabLayout.ViewPagerOnTabSelectedListener(mViewPager));
         toolbar();
         user_thumbnail_controll();
+        floatingButtonControll();
 
 }
 
@@ -166,9 +179,9 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         myToolbar = (Toolbar) findViewById(R.id.my_toolbar);
         setSupportActionBar(myToolbar);
     //toolbox setting -[----------
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        getSupportActionBar().setDisplayHomeAsUpEnabled(false);
 //        getSupportActionBar().setTitle("menu_button");
-        getSupportActionBar().setHomeAsUpIndicator(R.drawable.button);
+//        getSupportActionBar().setHomeAsUpIndicator(R.drawable.button);
 //        getSupportActionBar().setTitle("");  //해당 액티비티의 툴바에 있는 타이틀을 공백으로 처리
     }
     public void user_thumbnail_controll(){
@@ -203,38 +216,47 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         startActivityForResult(intent, 10001);
         overridePendingTransition(R.anim.slide_in, R.anim.slide_left_bit);
     }
-    @Override
-    public boolean onNavigationItemSelected(MenuItem item) {
-        int id = item.getItemId();
-
-        if (id == R.id.item_1){
-            mViewPager.setCurrentItem(0);
-        }else if(id == R.id.item_2){
-            mViewPager.setCurrentItem(1);
-        }else if (id == R.id.item_3){
-            mViewPager.setCurrentItem(2);
-        }else if(id == R.id.item_4) {
-            drawer.closeDrawer(GravityCompat.START);
-            moveToUserInfoActivity();
-        }else if(id == R.id.item_5){
-            login_remember = getSharedPreferences("setting", 0);
-            editor = login_remember.edit();
-            editor.putBoolean("id_pw_match", false);
-            editor.putString("user_email", "");
-            editor.putString("user_password", "");
-            Intent intent = new Intent(MainActivity.this, LoginActivity.class);
-            startActivity(intent);
-            editor.putString("kakao", "false");
-            editor.commit();
-            Session.getCurrentSession().removeCallback(callback);
-            //아래 2개는 완전히 콜백을 삭제시킨다.
-            Session.getCurrentSession().clearCallbacks();
-            Session.getCurrentSession().close();
-            finish();
-        }
-        drawer.closeDrawer(GravityCompat.START);
-        return true;
+    public void floatingButtonControll(){
+        fab.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent(MainActivity.this, WriteMovieNoteActivity.class);
+                startActivityForResult(intent, REQUEST_CODE_WRITE);
+            }
+        });
     }
+//    @Override
+//    public boolean onNavigationItemSelected(MenuItem item) {
+//        int id = item.getItemId();
+//
+//        if (id == R.id.item_1){
+//            mViewPager.setCurrentItem(0);
+//        }else if(id == R.id.item_2){
+//            mViewPager.setCurrentItem(1);
+//        }else if (id == R.id.item_3){
+//            mViewPager.setCurrentItem(2);
+//        }else if(id == R.id.item_4) {
+//            drawer.closeDrawer(GravityCompat.START);
+//            moveToUserInfoActivity();
+//        }else if(id == R.id.item_5){
+//            login_remember = getSharedPreferences("setting", 0);
+//            editor = login_remember.edit();
+//            editor.putBoolean("id_pw_match", false);
+//            editor.putString("user_email", "");
+//            editor.putString("user_password", "");
+//            Intent intent = new Intent(MainActivity.this, LoginActivity.class);
+//            startActivity(intent);
+//            editor.putString("kakao", "false");
+//            editor.commit();
+//            Session.getCurrentSession().removeCallback(callback);
+//            //아래 2개는 완전히 콜백을 삭제시킨다.
+//            Session.getCurrentSession().clearCallbacks();
+//            Session.getCurrentSession().close();
+//            finish();
+//        }
+//        drawer.closeDrawer(GravityCompat.START);
+//        return true;
+//    }
 
 
     //추가된 소스, ToolBar에 menu.xml을 인플레이트함
@@ -250,14 +272,14 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         int id = item.getItemId();
-            Log.e("option item ::", Integer.toString(id));
-        if (drawer.isDrawerOpen(GravityCompat.START)) {
-            //drawer is open
-            drawer.closeDrawer(Gravity.START);
-        } else {
-            //drawer is closed
-            drawer.openDrawer(Gravity.START);
-        }
+//            Log.e("option item ::", Integer.toString(id));
+//        if (drawer.isDrawerOpen(GravityCompat.START)) {
+//            //drawer is open
+//            drawer.closeDrawer(Gravity.START);
+//        } else {
+//            //drawer is closed
+//            drawer.openDrawer(Gravity.START);
+//        }
 
         return true;
     }
@@ -305,5 +327,18 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 //    }
 
 
-
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if(requestCode == REQUEST_CODE_WRITE){
+            Log.e("from where", "write");
+            if(requestCode==RESULT_OK){
+                Log.e("from where", "write result ok");
+            }else if(resultCode==RESULT_CANCELED){
+                Log.e("from where", "write result cancel");
+            }else{
+                Log.e("from where", "write result else");
+            }
+        }
+    }
 }

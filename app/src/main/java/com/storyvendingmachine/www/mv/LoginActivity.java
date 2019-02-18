@@ -201,6 +201,7 @@ public class LoginActivity extends AppCompatActivity {
                             if(login_success_fail.equals("login_success")){
                                 String user_email = temp.getString("user_email");
                                 String user_nickname = temp.getString("user_nickname");
+                                String user_thumbnail = temp.getString("user_thumbnail");
 
                                 editor.putBoolean("id_pw_match", true);
                                 editor.putString("user_email", input_email.getText().toString());
@@ -212,6 +213,7 @@ public class LoginActivity extends AppCompatActivity {
                                 intent.putExtra("login_type", "normal");
                                 intent.putExtra("user_email", user_email);
                                 intent.putExtra("user_nickname", user_nickname);
+                                intent.putExtra("user_thumbnail", user_thumbnail);
                                 startActivity(intent);
                                 overridePendingTransition(R.anim.fade_in, R.anim.fade_out);
                                 finish();

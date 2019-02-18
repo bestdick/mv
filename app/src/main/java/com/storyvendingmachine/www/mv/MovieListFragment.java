@@ -11,9 +11,14 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.WindowManager;
+import android.widget.AbsListView;
+import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.ListView;
+import android.widget.ProgressBar;
+import android.widget.TextView;
 
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
@@ -23,6 +28,7 @@ import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
 
 import org.json.JSONArray;
+import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
@@ -32,6 +38,9 @@ import java.util.Map;
 
 import static com.storyvendingmachine.www.mv.MainActivity.LoggedInUser_ID;
 import static com.storyvendingmachine.www.mv.MainActivity.LoginType;
+import static com.storyvendingmachine.www.mv.MainActivity.fab;
+import static com.storyvendingmachine.www.mv.MainActivity.pb;
+import static com.storyvendingmachine.www.mv.REQUESTCODES.REQUEST_CODE_WRITE;
 
 //
 ///**
@@ -46,9 +55,14 @@ public class MovieListFragment extends Fragment {
 
 
     List<list_public> list;
+    List<MovieList> myMovieListList;
     listadapter_public adapter;
-    ListView listView;
+    MovieListAdapter movieListAdapter;
+     ListView listView;
+    int myPage, globalPage;
 
+    int myListItemCount, globalListItemCount;
+//    ProgressBar progressBar;
 
 
     // TODO: Rename parameter arguments, choose names that match
@@ -91,6 +105,8 @@ public class MovieListFragment extends Fragment {
             mParam1 = getArguments().getString(ARG_PARAM1);
             mParam2 = getArguments().getString(ARG_PARAM2);
         }
+        myPage=0;
+        globalPage = 0 ;
     }
 
     @Override
@@ -98,43 +114,129 @@ public class MovieListFragment extends Fragment {
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         View rootview = inflater.inflate(R.layout.fragment_movie_list, container, false);
-        initializer(rootview);
+
         if(mParam1.equals("myList")){
             String list_selection = "my_list";
-            swiperRefresh(rootview, list_selection);
-            getListfromServer(rootview, list_selection);
+            initializer(rootview, list_selection);
+            View header_view = addHeader_MyList();
+            getListfromServer(rootview, list_selection, myPage, header_view, null);
+            View footer_view = scrollToBottomFetchMoreList(rootview, list_selection);
+            swiperRefresh(rootview, list_selection, header_view, footer_view);
+            OnItemSelectControl( rootview,  list_selection);
         }else{
             //mParam1 == "sharedList
             String list_selection = "global_list";
-            swiperRefresh(rootview, list_selection);
-            getListfromServer(rootview, list_selection);
-
+            initializer(rootview, list_selection);
+            getListfromServer(rootview, list_selection, globalPage, null,null);
+            View footer_view = scrollToBottomFetchMoreList(rootview, list_selection);
+            swiperRefresh(rootview, list_selection, null, footer_view);
+            OnItemSelectControl( rootview,  list_selection);
         }
         return rootview;
     }
 
-    public void initializer(View rootView){
+    public void initializer(View rootView, String list_selection){
+//        progressBar = (ProgressBar) rootView.findViewById(R.id.progressBar);
         listView = (ListView) rootView.findViewById(R.id.listFragment_container);
-        list = new ArrayList<list_public>();
-        adapter = new listadapter_public(getContext().getApplicationContext(), list);
-        listView.setAdapter(adapter);
+//        if(list_selection.equals("my_list")){
+            myMovieListList= new ArrayList<MovieList>();
+            movieListAdapter = new MovieListAdapter(getActivity(), myMovieListList);
+            listView.setAdapter(movieListAdapter);
+//            fab.attachToListView(listView);
+//        }else{
+//            myMovieListList= new ArrayList<MovieList>();
+//            movieListAdapter = new MovieListAdapter(getActivity(), myMovieListList);
+//            listView.setAdapter(movieListAdapter);
+//            fab.attachToListView(listView);
+//            list = new ArrayList<list_public>();
+//            adapter = new listadapter_public(getActivity(), list);
+//            listView.setAdapter(adapter);
+//        }
     }
-    public void swiperRefresh(final View rootView, final String list_selection){
+    public void swiperRefresh(final View rootView, final String list_selection, final View header_view, final View footer_view){
         final SwipeRefreshLayout mSwipeRefreshLayout = (SwipeRefreshLayout) rootView.findViewById(R.id.swipe_layout);
         mSwipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {
-//                item_get_num=0;
-                list.clear();
-                getListfromServer(rootView,list_selection);
+                TextView see_more_textView = (TextView) footer_view.findViewById(R.id.see_more);
+                see_more_textView.setText("더보기");
+                if(list_selection.equals("my_list")){
+                    myPage = 0;
+                    myMovieListList.clear();
+                    getListfromServer(rootView,list_selection, myPage, header_view, null);
+                }else{
+                    globalPage=0;
+                    myMovieListList.clear();
+                    getListfromServer(rootView,list_selection, globalPage, header_view, null);
+                }
                 mSwipeRefreshLayout.setRefreshing(false);
             }
         });
     }
+    public View addHeader_MyList(){
+        View header = getLayoutInflater().inflate(R.layout.container_mylist_header, null);
+        TextView write_textView = (TextView) header.findViewById(R.id.write_textView);
+        write_textView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent(getActivity(), WriteMovieNoteActivity.class);
+                getActivity().startActivityForResult(intent, REQUEST_CODE_WRITE);
+            }
+        });
+        listView.addHeaderView(header);
+        return header;
+    }
+    public View scrollToBottomFetchMoreList(final View rootview, final String list_selection){
+        final View footer_progress_view = getLayoutInflater().inflate(R.layout.container_footer_progress, null);
+        final TextView see_more_textView = (TextView) footer_progress_view.findViewById(R.id.see_more);
+        listView.addFooterView(footer_progress_view);
+        listView.setOnScrollListener(new AbsListView.OnScrollListener() {
+            @Override
+            public void onScrollStateChanged(AbsListView absListView, int scrollState) {
+                if (scrollState == AbsListView.OnScrollListener.SCROLL_STATE_IDLE &&
+                        (listView.getLastVisiblePosition() - listView.getHeaderViewsCount() - listView.getFooterViewsCount()) >= (movieListAdapter.getCount() - 1)) {
+                    // Now your listview has hit the bottom
+                    Log.e("scroll", "hit the bottom");
+                    if(list_selection.equals("my_list")){
+                        myPage+=20;
+                        if(myListItemCount > myPage){
+                            progressBar_visible();
+                            getListfromServer(rootview, list_selection, myPage, null, footer_progress_view);
+                        }else{
+                            see_more_textView.setText("마지막 페이지");
+                            Log.e("last page", " last_page");
+                        }
+                    }else{
+                        globalPage+=20;
+                        if(globalListItemCount > globalPage){
+                            progressBar_visible();
+                            getListfromServer(rootview, list_selection, globalPage, null, footer_progress_view);
+                        }else{
+                            see_more_textView.setText("마지막 페이지");
+                            Log.e("last page", " last_page");
+                        }
+//                        screenUntouchable();
+//                        getListfromServer(rootview, list_selection, page, null, footer_progress_view);
+                    }
 
-    public void getListfromServer(final View rootview, final String list_selection){
+                }
+            }
+            @Override
+            public void onScroll(AbsListView absListView, int i, int i1, int i2) {
+
+            }
+        });
+        return footer_progress_view;
+    }
+    public void getListfromServer(final View rootview, final String list_selection, final int page, final View header_view, final View footer_view){
         RequestQueue queue = Volley.newRequestQueue(getActivity());
-        String url = "http://www.joonandhoon.com/jhmovienote/get_list.php";
+//        String url = "";
+//        if(list_selection.equals("my_list")){
+//            url = "http://www.joonandhoon.com/jhmovienote/getMovieList.php";
+//        }else{
+//             url = "http://www.joonandhoon.com/jhmovienote/get_list.php";
+//        }
+        String url = "http://www.joonandhoon.com/jhmovienote/getMovieList.php";
         StringRequest stringRequest = new StringRequest(Request.Method.POST, url,
                 new Response.Listener<String>() {
 
@@ -145,7 +247,7 @@ public class MovieListFragment extends Fragment {
                             JSONObject jsonObject = new JSONObject(response);
                             JSONArray jsonArray = jsonObject.getJSONArray("response");
                             int count =0;
-                            if(jsonArray.length()==0){
+                            if(jsonArray.length()==0 && page==0){
                                 Log.e("nothing", "nothing");
                                 SwipeRefreshLayout swipe_layout = (SwipeRefreshLayout) rootview.findViewById(R.id.swipe_layout);
                                 swipe_layout.setVisibility(View.GONE);
@@ -156,41 +258,109 @@ public class MovieListFragment extends Fragment {
                                     @Override
                                     public void onClick(View view) {
                                         Intent intent = new Intent(getActivity(), WriteMovieNoteActivity.class);
-                                        startActivityForResult(intent, 10002);
-
+                                        getActivity().startActivityForResult(intent, 10002);
                                     }
                                 });
                             }else {
+                                if(list_selection.equals("my_list")){
+                                    // 나의 리스트 갯수
+                                    if(page == 0){
+                                        String total_mylist_count = jsonObject.getString("count_total_mylist");
+                                        myListItemCount = Integer.parseInt(total_mylist_count);
+                                        TextView list_count_textView = (TextView) header_view.findViewById(R.id.list_count_textView);
+                                        list_count_textView.setText(total_mylist_count);
+                                    }
+                                    // 나의 리스트 갯수
+                                    for(int i = 0 ; i < jsonArray.length(); i++){
+                                        String primary_key = jsonArray.getJSONObject(i).getString("primary_key");
+                                        String login_type = jsonArray.getJSONObject(i).getString("login_type");
+                                        String user_id = jsonArray.getJSONObject(i).getString("user_id");
+                                        String user_nickname = jsonArray.getJSONObject(i).getString("user_nickname");
+                                        String user_thumbnail = jsonArray.getJSONObject(i).getString("user_thumbnail");
+                                        String movie_title = jsonArray.getJSONObject(i).getString("movie_title");
+                                        String content_alignment = jsonArray.getJSONObject(i).getString("content_alignment");
+                                        String w_date = jsonArray.getJSONObject(i).getString("w_date");
+                                        String w_time = jsonArray.getJSONObject(i).getString("w_time");
+                                        String w_year = jsonArray.getJSONObject(i).getString("w_year");
+                                        String hits = jsonArray.getJSONObject(i).getString("hits");
+                                        String public_private = jsonArray.getJSONObject(i).getString("public_private");
+                                        JSONArray movie_content = jsonArray.getJSONObject(i).getJSONArray("movie_contents");
+                                        JSONArray movie_images = jsonArray.getJSONObject(i).getJSONArray("movie_images");
+                                        JSONArray movie_images_rotation = jsonArray.getJSONObject(i).getJSONArray("movie_images_rotation");
+                                        JSONArray movie_images_width_height = jsonArray.getJSONObject(i).getJSONArray("movie_images_width_height");
 
-                                while (count < jsonArray.length()) {
-                                    JSONObject exam = jsonArray.getJSONObject(count);
-                                    String database_id = exam.getString("database_id");
-                                    String author = exam.getString("author");
-                                    String movie_title = exam.getString("movie_title");
-                                    String main_text = exam.getString("main_text");
-                                    String w_date = exam.getString("w_date");
-                                    String w_time = exam.getString("w_time");
-                                    String w_year = exam.getString("w_year");
-                                    String img_name = exam.getString("img_name");
-                                    String imageURL = imgURL(img_name);//image full url
-                                    String img_rotate = exam.getString("img_rotate");
-                                    String hits = exam.getString("hits");
-                                    String user_type = exam.getString("user_type");
-                                    String public_private = exam.getString("public_private");
+                                        MovieList item = new MovieList(primary_key,
+                                                login_type,
+                                                user_id,
+                                                user_nickname,
+                                                user_thumbnail,
+                                                movie_title,
+                                                content_alignment,
+                                                w_date,
+                                                w_time,
+                                                w_year,
+                                                hits,
+                                                public_private,
+                                                movie_content,
+                                                movie_images,
+                                                movie_images_rotation,
+                                                movie_images_width_height);
+                                        myMovieListList.add(item);
+                                    }
+                                    int count_footer_views = listView.getFooterViewsCount();
+                                    if(count_footer_views > 0){
+                                        progressBar_invisible();
+                                    }
+                                    movieListAdapter.notifyDataSetChanged();
+                                }else{
+                                    String total_globallist_count = jsonObject.getString("count_total_globallist");
+                                    globalListItemCount = Integer.parseInt(total_globallist_count);
+                                    for(int i = 0 ; i < jsonArray.length(); i++){
+                                        String primary_key = jsonArray.getJSONObject(i).getString("primary_key");
+                                        String login_type = jsonArray.getJSONObject(i).getString("login_type");
+                                        String user_id = jsonArray.getJSONObject(i).getString("user_id");
+                                        String user_nickname = jsonArray.getJSONObject(i).getString("user_nickname");
+                                        String user_thumbnail = jsonArray.getJSONObject(i).getString("user_thumbnail");
+                                        String movie_title = jsonArray.getJSONObject(i).getString("movie_title");
+                                        String content_alignment = jsonArray.getJSONObject(i).getString("content_alignment");
+                                        String w_date = jsonArray.getJSONObject(i).getString("w_date");
+                                        String w_time = jsonArray.getJSONObject(i).getString("w_time");
+                                        String w_year = jsonArray.getJSONObject(i).getString("w_year");
+                                        String hits = jsonArray.getJSONObject(i).getString("hits");
+                                        String public_private = jsonArray.getJSONObject(i).getString("public_private");
+                                        JSONArray movie_content = jsonArray.getJSONObject(i).getJSONArray("movie_contents");
+                                        JSONArray movie_images = jsonArray.getJSONObject(i).getJSONArray("movie_images");
+                                        JSONArray movie_images_rotation = jsonArray.getJSONObject(i).getJSONArray("movie_images_rotation");
+                                        JSONArray movie_images_width_height = jsonArray.getJSONObject(i).getJSONArray("movie_images_width_height");
 
-
-//                                    total_my_list = exam.getString("total_my_list");
-//                                    total_global_list = exam.getString("total_global_list");
-
-                                    list_public added_item = new list_public(database_id, author, movie_title, main_text, w_date, w_time, w_year, imageURL, img_rotate, hits, user_type, public_private);
-                                    list.add(added_item);
-                                    Log.e("count::", Integer.toString(count));
-                                    count++;
-
+                                        MovieList item = new MovieList(primary_key,
+                                                login_type,
+                                                user_id,
+                                                user_nickname,
+                                                user_thumbnail,
+                                                movie_title,
+                                                content_alignment,
+                                                w_date,
+                                                w_time,
+                                                w_year,
+                                                hits,
+                                                public_private,
+                                                movie_content,
+                                                movie_images,
+                                                movie_images_rotation,
+                                                movie_images_width_height);
+                                        myMovieListList.add(item);
+                                    }
+                                    int count_footer_views = listView.getFooterViewsCount();
+                                    if(count_footer_views > 0){
+                                        progressBar_invisible();
+                                    }
+                                    movieListAdapter.notifyDataSetChanged();
+//                                    temp(jsonArray);
+//                                    adapter.notifyDataSetChanged();
                                 }
-
                             }
-                            adapter.notifyDataSetChanged();
+
                         }
                         catch(Exception e){
 
@@ -207,17 +377,72 @@ public class MovieListFragment extends Fragment {
             @Override
             protected Map<String, String> getParams(){
                 Map<String, String> params = new HashMap<String, String>();
+                params.put("token", "jhmovienote");
                 params.put("login_type", LoginType);
+                params.put("user_id", LoggedInUser_ID);
                 params.put("list_selection", list_selection);
-                params.put("kakao_id", LoggedInUser_ID);
-                params.put("norm_user_email", LoggedInUser_ID);
+                params.put("page", String.valueOf(page));
+//                params.put("norm_user_email", LoggedInUser_ID);
                 return params;
             }
         };
         queue.add(stringRequest);
-
     }
+    public void OnItemSelectControl(View rootview, String list_selection){
+        if(list_selection.equals("my_list")){
+            listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+                @Override
+                public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
+                    if(i == 0 || i==(movieListAdapter.getCount()+1)){ // header and footer
+                        //****** make header and footer unclickable
 
+                        Log.e("clicked item", "cannot click");
+                    }else{
+                        Log.e("clicked item", String.valueOf(i));
+                    }
+                }
+            });
+        }else{
+            //list_selection == global_list
+            listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+                @Override
+                public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
+                    if(i==(movieListAdapter.getCount())){//footer
+                        //****** make header and footer unclickable
+                        Log.e("clicked item", "cannot click");
+                    }else{
+                        Log.e("clicked item", String.valueOf(i));
+                    }
+                }
+            });
+        }
+    }
+    public void temp(JSONArray jsonArray) throws JSONException {
+        for (int count = 0 ; count < jsonArray.length(); count++) {
+            JSONObject exam = jsonArray.getJSONObject(count);
+            String database_id = exam.getString("database_id");
+            String author = exam.getString("author");
+            String movie_title = exam.getString("movie_title");
+            String main_text = exam.getString("main_text");
+            String w_date = exam.getString("w_date");
+            String w_time = exam.getString("w_time");
+            String w_year = exam.getString("w_year");
+            String img_name = exam.getString("img_name");
+            String imageURL = imgURL(img_name);//image full url
+            String img_rotate = exam.getString("img_rotate");
+            String hits = exam.getString("hits");
+            String user_type = exam.getString("user_type");
+            String public_private = exam.getString("public_private");
+
+
+//                                    total_my_list = exam.getString("total_my_list");
+//                                    total_global_list = exam.getString("total_global_list");
+
+            list_public added_item = new list_public(database_id, author, movie_title, main_text, w_date, w_time, w_year, imageURL, img_rotate, hits, user_type, public_private);
+            list.add(added_item);
+            Log.e("count::", Integer.toString(count));
+        }
+    }
     public String imgURL(String image_name){
         String baseURL = "http://www.joonandhoon.com/jhmovienote/uploads/";
         String[] temp = image_name.split("##\\$\\$##\\$\\$");
@@ -292,4 +517,14 @@ public class MovieListFragment extends Fragment {
 //        // TODO: Update argument type and name
 //        void onFragmentInteraction(Uri uri);
 //    }
+
+public void progressBar_visible(){
+    pb.setVisibility(View.VISIBLE);
+    getActivity().getWindow().setFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE, WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE);
+}
+public void progressBar_invisible(){
+    getActivity().getWindow().clearFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE);
+    pb.setVisibility(View.GONE);
+}
+
 }

@@ -24,6 +24,10 @@
                 android:name="android.support.FILE_PROVIDER_PATHS"
                 android:resource="@xml/file_path" />
         </provider>
+        <!-- 아래 sample 구굴꺼 -->
+        <meta-data
+            android:name="com.google.android.gms.ads.APPLICATION_ID"
+            android:value="ca-app-pub-9203333069147351~3806041934" />
 
         <!-- <activity -->
         <!-- android:name="com.kakao.auth.authorization.authcode.KakaoWebViewActivity" -->

@@ -30,7 +30,7 @@ public class ViewPagerAdapter extends FragmentStatePagerAdapter {
             } else if (position == 3) {
                 return MovieListFragment.newInstance("sharedList", null);
             }else{
-                return writingFragment.newInstance();
+                return EtcFragment.newInstance(null, null);
             }
 
     }

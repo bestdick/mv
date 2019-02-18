@@ -19,6 +19,7 @@ import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
+import com.google.android.gms.ads.MobileAds;
 import com.kakao.auth.Session;
 
 import org.json.JSONArray;
@@ -36,6 +37,7 @@ public class FrontPage extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_front_page);
+        MobileAds.initialize(this, getResources().getString(R.string.admob_id));
         login_remember = getSharedPreferences("setting", 0);
         editor = login_remember.edit();
 
@@ -92,6 +94,7 @@ public class FrontPage extends AppCompatActivity {
                             if(login_success_fail.equals("login_success")){
                                 String user_email = temp.getString("user_email");
                                 String user_nickname = temp.getString("user_nickname");
+                                String user_thumbnail = temp.getString("user_thumbnail");
 
                                 editor.putBoolean("id_pw_match", true);
                                 editor.putString("user_email", input_user_email);
@@ -103,6 +106,7 @@ public class FrontPage extends AppCompatActivity {
                                 intent.putExtra("login_type", "normal");
                                 intent.putExtra("user_email", user_email);
                                 intent.putExtra("user_nickname", user_nickname);
+                                intent.putExtra("user_thumbnail", user_thumbnail);
                                 startActivity(intent);
                                 overridePendingTransition(R.anim.fade_in, R.anim.fade_out);
                                 finish();
