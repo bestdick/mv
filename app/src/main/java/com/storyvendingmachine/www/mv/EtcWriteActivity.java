@@ -3,6 +3,7 @@ package com.storyvendingmachine.www.mv;
 import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.widget.Toolbar;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
@@ -21,7 +22,16 @@ public class EtcWriteActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_etc_write);
-
+        toolbar();
+        initializer();
+    }
+    public void toolbar(){
+        Toolbar myToolbar = (Toolbar) findViewById(R.id.my_toolbar);
+        setSupportActionBar(myToolbar);
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        getSupportActionBar().setTitle("menu_button");
+        getSupportActionBar().setHomeAsUpIndicator(R.drawable.icon_close);
+        getSupportActionBar().setTitle("");  //해당 액티비티의 툴바에 있는 타이틀을 공백으로 처리
     }
     public void initializer(){
         TextView toolbar_title_textView = (TextView) findViewById(R.id.toolbar_title_textView);
