@@ -1,102 +1,108 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout
-    xmlns:android="http://schemas.android.com/apk/res/android" android:layout_width="match_parent"
-    android:orientation="vertical"
-    android:layout_height="wrap_content"
-    >
-<LinearLayout
+<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    android:orientation="vertical"
-    android:layout_marginTop="20dp"
-    android:layout_marginBottom="5dp"
-    android:paddingBottom="10dp"
-    android:paddingTop="10dp"
-    android:paddingLeft="15dp"
-    android:paddingRight="15dp"
-    android:background="@color/colorWhite">
-    <TextView
-        android:id="@+id/SV_container_title"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="제목이 들어갈 자리"
-        android:textSize="20dp"
-        android:textStyle="bold"
-        android:textColor="@color/colorBlack"
-        android:layout_marginBottom="8dp"/>
+    android:layout_height="match_parent">
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        android:weightSum="1">
+        android:background="@color/colorWhite"
+        android:orientation="vertical"
+        android:paddingLeft="15dp"
+        android:paddingTop="10dp"
+        android:paddingRight="15dp"
+        android:paddingBottom="10dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <TextView
+            android:id="@+id/SV_container_title"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="8dp"
+            android:text="제목이 들어갈 자리"
+            android:textColor="@color/colorBlack"
+            android:textSize="20dp"
+            android:textStyle="bold" />
 
         <LinearLayout
-            android:layout_width="wrap_content"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_weight=".5"
-            android:layout_marginBottom="5dp">
+            android:orientation="horizontal"
+            android:weightSum="1">
 
-            <TextView
+            <LinearLayout
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="글쓴이 "
-                android:textColor="@color/colorGrey"
-                android:textSize="12dp"
-                android:textStyle="italic"/>
+                android:layout_marginBottom="5dp"
+                android:layout_weight=".5">
 
-            <TextView
-                android:id="@+id/SV_container_author"
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="글쓴이 "
+                    android:textColor="@color/colorGrey"
+                    android:textSize="12dp"
+                    android:textStyle="italic" />
+
+                <TextView
+                    android:id="@+id/SV_container_author"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="작가의 이름 들어갈 자리"
+                    android:textColor="@color/colorGrey"
+                    android:textSize="12dp"
+                    android:textStyle="italic" />
+            </LinearLayout>
+
+            <LinearLayout
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="작가의 이름 들어갈 자리"
-                android:textColor="@color/colorGrey"
-                android:textSize="12dp"
-                android:textStyle="italic"/>
+                android:layout_weight=".5">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="조횟수 "
+                    android:textColor="@color/colorGrey"
+                    android:textSize="12dp"
+                    android:textStyle="italic" />
+
+                <TextView
+                    android:id="@+id/SV_container_hit"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="00"
+                    android:textColor="@color/colorGrey"
+                    android:textSize="12dp"
+                    android:textStyle="italic" />
+            </LinearLayout>
         </LinearLayout>
 
         <LinearLayout
-            android:layout_width="wrap_content"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_weight=".5">
+            android:orientation="horizontal">
 
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="조횟수 "
+                android:text="작성일 "
                 android:textColor="@color/colorGrey"
                 android:textSize="12dp"
-                android:textStyle="italic"/>
+                android:textStyle="italic" />
 
             <TextView
-                android:id="@+id/SV_container_hit"
+                android:id="@+id/SV_container_date"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="00"
+                android:text="0000-00-00"
                 android:textColor="@color/colorGrey"
                 android:textSize="12dp"
-                android:textStyle="italic"/>
+                android:textStyle="italic" />
         </LinearLayout>
     </LinearLayout>
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal">
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="작성일 "
-        android:textColor="@color/colorGrey"
-        android:textSize="12dp"
-        android:textStyle="italic"/>
-    <TextView
-        android:id="@+id/SV_container_date"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="0000-00-00"
-        android:textColor="@color/colorGrey"
-        android:textSize="12dp"
-        android:textStyle="italic"/>
-    </LinearLayout>
-</LinearLayout>
-</LinearLayout>
+</android.support.constraint.ConstraintLayout>

@@ -13,8 +13,7 @@
         android:id="@+id/my_toolbar"
         android:layout_width="match_parent"
         android:layout_height="?attr/actionBarSize"
-        android:background="?attr/colorPrimary"
-        android:elevation="4dp"
+        android:background="@color/colorWhite"
         android:theme="@style/ThemeOverlay.AppCompat.ActionBar"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -25,8 +24,6 @@
         android:id="@+id/scrollView2"
         android:layout_width="0dp"
         android:layout_height="0dp"
-        android:layout_marginBottom="8dp"
-        android:layout_marginTop="8dp"
         android:background="@color/colorWhiteSmoke"
         app:layout_constraintBottom_toTopOf="@+id/constraintLayout3"
         app:layout_constraintEnd_toEndOf="parent"
@@ -36,8 +33,6 @@
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginBottom="20dp"
-            android:layout_marginTop="8dp"
             android:background="@color/colorWhiteSmoke"
             android:orientation="vertical">
 
@@ -45,42 +40,41 @@
                 android:id="@+id/select_view_container"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginBottom="2dp"
                 android:background="@color/colorWhite"
+                android:layout_marginBottom="1dp"
                 android:orientation="vertical">
-
+                <!--this container is use for display user info-->
             </LinearLayout>
 
             <LinearLayout
                 android:id="@+id/select_view_container_2"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginBottom="15dp"
                 android:background="@color/colorWhite"
+
                 android:orientation="vertical">
             </LinearLayout>
+
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:layout_marginTop="1dp"
+                android:background="@color/colorWhite"
+                android:paddingLeft="16dp"
                 android:paddingTop="16dp"
                 android:paddingBottom="16dp"
-                android:layout_marginTop="8dp"
-                android:paddingLeft="16dp"
-                android:layout_marginBottom="1dp"
-                android:textSize="15sp"
-                android:background="@color/colorWhite"
-                android:text="댓글"/>
+                android:text="댓글"
+                android:textSize="15sp" />
+
             <LinearLayout
                 android:id="@+id/select_view_container_3"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:background="@color/colorWhiteSmoke"
                 android:orientation="vertical">
-
+                <!--this container is for displaying comments-->
             </LinearLayout>
         </LinearLayout>
-
-
     </ScrollView>
 
     <android.support.constraint.ConstraintLayout

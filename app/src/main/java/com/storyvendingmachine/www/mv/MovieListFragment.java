@@ -393,11 +393,19 @@ public class MovieListFragment extends Fragment {
             listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
                 @Override
                 public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
+                    int number = (i-1);
                     if(i == 0 || i==(movieListAdapter.getCount()+1)){ // header and footer
                         //****** make header and footer unclickable
-
                         Log.e("clicked item", "cannot click");
                     }else{
+                        String primary_key = myMovieListList.get(number).getPrimary_key();
+                        String LoginType = myMovieListList.get(number).getLoginType();
+                        String user_id = myMovieListList.get(number).getUser_id();
+                        Intent intent = new Intent(getActivity(), SelectViewActivity.class);
+                        intent.putExtra("database_id", primary_key);
+                        intent.putExtra("user_type", LoginType);
+                        intent.putExtra("author", user_id);// 타입이 kakao 이면 카카오 아이디 반환 노멀이면 일반 아이디 반환
+                        startActivity(intent);
                         Log.e("clicked item", String.valueOf(i));
                     }
                 }
@@ -411,6 +419,15 @@ public class MovieListFragment extends Fragment {
                         //****** make header and footer unclickable
                         Log.e("clicked item", "cannot click");
                     }else{
+                        int number = i;
+                        String primary_key = myMovieListList.get(number).getPrimary_key();
+                        String LoginType = myMovieListList.get(number).getLoginType();
+                        String user_id = myMovieListList.get(number).getUser_id();
+                        Intent intent = new Intent(getActivity(), SelectViewActivity.class);
+                        intent.putExtra("database_id", primary_key);
+                        intent.putExtra("user_type", LoginType);
+                        intent.putExtra("author", user_id);// 타입이 kakao 이면 카카오 아이디 반환 노멀이면 일반 아이디 반환
+                        startActivity(intent);
                         Log.e("clicked item", String.valueOf(i));
                     }
                 }

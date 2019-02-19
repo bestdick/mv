@@ -64,7 +64,8 @@
         <activity android:name=".UserInfoSetting" />
         <activity android:name=".BoxOfficeActivity" />
         <activity android:name=".WriteActivity" />
-        <activity android:name=".WriteMovieNoteActivity"></activity>
+        <activity android:name=".WriteMovieNoteActivity" />
+        <activity android:name=".EtcWriteActivity"></activity>
     </application>
 
 </manifest>
