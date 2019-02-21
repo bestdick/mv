@@ -216,6 +216,7 @@ public class BoxOfficeFragment extends Fragment {
 
 
                                         Intent intent = new Intent(getActivity(), BoxOfficeActivity.class);
+                                        intent.putExtra("from", "boxOffice");
                                         intent.putExtra("rank", mv_rank);
                                         intent.putExtra("title", BoxOfficeMovieTitle.get(Integer.parseInt(tag_sufix)));
                                         intent.putExtra("youtube_url", BoxOfficeYoutubeUrl.get(Integer.parseInt(tag_sufix)));

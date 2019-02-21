@@ -22,7 +22,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:fontFamily="monospace"
-            android:text="# ㅇㅇㅇ"
+            android:text="#쓰기"
             android:textSize="24sp"
             tools:layout_editor_absoluteX="16dp"
             tools:layout_editor_absoluteY="12dp" />
@@ -44,6 +44,18 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content">
 
+                <TextView
+                    android:id="@+id/title_textView"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:background="@color/colorWhite"
+                    android:text="게시판 이름"
+                    android:textStyle="bold"
+                    android:textSize="18sp"
+                    android:padding="16dp"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent" />
 
                 <EditText
                     android:id="@+id/title_editText"
@@ -55,7 +67,7 @@
                     android:padding="16dp"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toTopOf="parent" />
+                    app:layout_constraintTop_toBottomOf="@id/title_textView"/>
 
                 <EditText
                     android:id="@+id/content_editText"
@@ -73,8 +85,12 @@
                     android:id="@+id/submit_button"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
+                    android:textStyle="bold"
+                    android:textColor="@color/colorWhite"
                     android:text="작성 하기"
+                    android:background="@color/colorCrimsonRed"
                     app:layout_constraintTop_toBottomOf="@+id/content_editText"
+
                     tools:layout_editor_absoluteX="16dp" />
             </android.support.constraint.ConstraintLayout>
         </LinearLayout>

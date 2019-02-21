@@ -70,12 +70,12 @@ public class EtcListAdapter extends BaseAdapter {
                 return "[업데이트]";
             case "announcement":
                 return "[공지]";
-            case "error":
+            case "error_board":
                 return "[오류신고]";
-            case "free":
+            case "free_board":
                 return "[자유게시판]";
             default:
-                return "[개선및건의]";
+                return "[건의및개선]";
         }
     }
 }

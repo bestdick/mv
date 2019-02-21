@@ -2,6 +2,7 @@ package com.storyvendingmachine.www.mv;
 
 import android.app.Activity;
 import android.content.Context;
+import android.content.Intent;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -336,33 +337,67 @@ public class YoutubeFragment extends Fragment {
                 nextPageToken = jsonObject.getString("nextPageToken");
                 for(int i = 0; i<jsonArray.length(); i++){
                     JSONObject temp1 = jsonArray.getJSONObject(i);
-                    String title = temp1.getJSONObject("snippet").getString("title");
+                    final String title = temp1.getJSONObject("snippet").getString("title");
                     Log.e("test selected yt list", title);
-                    String description = temp1.getJSONObject("snippet").getString("description");
+                    final String description = temp1.getJSONObject("snippet").getString("description");
                     // thumbnail
                     String thumbnail_url = temp1.getJSONObject("snippet").getJSONObject("thumbnails").getJSONObject("high").getString("url");
                     String thumbnail_width = temp1.getJSONObject("snippet").getJSONObject("thumbnails").getJSONObject("high").getString("width");
                     String thumbnail_height = temp1.getJSONObject("snippet").getJSONObject("thumbnails").getJSONObject("high").getString("height");
 
                     //*************************  youtube video url ******************
-                    String video_url = "";
+
                     JSONObject temp2 = temp1.getJSONObject("contentDetails");
                     if(temp2.isNull("upload")){
                         JSONObject temp3 = temp2.getJSONObject("playlistItem");
                         JSONObject temp4 = temp3.getJSONObject("resourceId");
-                        video_url = temp4.getString("videoId");
+                        final String video_url = temp4.getString("videoId");
                         Log.e("videoid" , temp4.getString("videoId"));
+
+                        View youtuber_element_container = getLayoutInflater().inflate(R.layout.container_youtuber_list, null);
+                        ImageView youtube_thumbnail_imageView = (ImageView) youtuber_element_container.findViewById(R.id.youtube_thumbnail_imageView);
+                        TextView youtube_title_textView = (TextView) youtuber_element_container.findViewById(R.id.youtube_title_textView);
+                        youtube_title_textView.setText(title);
+                        load_image(thumbnail_url, youtube_thumbnail_imageView);
+                        container.addView(youtuber_element_container);
+
+                        youtuber_element_container.setOnClickListener(new View.OnClickListener() {
+                            @Override
+                            public void onClick(View view) {
+                                Log.e("clicked", "youtube clicked");
+                                Intent intent = new Intent(getActivity(), BoxOfficeActivity.class);
+                                intent.putExtra("from", "youtube");
+                                intent.putExtra("video_title", title);
+                                intent.putExtra("video_description", description);
+                                intent.putExtra("video_url", video_url);
+                                startActivity(intent);
+                            }
+                        });
                     }else{
                         JSONObject temp3 = temp2.getJSONObject("upload");
-                        video_url = temp3.getString("videoId");
+                        final String video_url = temp3.getString("videoId");
                         Log.e("videoId", temp3.getString("videoId"));
+                        View youtuber_element_container = getLayoutInflater().inflate(R.layout.container_youtuber_list, null);
+                        ImageView youtube_thumbnail_imageView = (ImageView) youtuber_element_container.findViewById(R.id.youtube_thumbnail_imageView);
+                        TextView youtube_title_textView = (TextView) youtuber_element_container.findViewById(R.id.youtube_title_textView);
+                        youtube_title_textView.setText(title);
+                        load_image(thumbnail_url, youtube_thumbnail_imageView);
+                        container.addView(youtuber_element_container);
+
+                        youtuber_element_container.setOnClickListener(new View.OnClickListener() {
+                            @Override
+                            public void onClick(View view) {
+                                Log.e("clicked", "youtube clicked");
+                                Intent intent = new Intent(getActivity(), BoxOfficeActivity.class);
+                                intent.putExtra("from", "youtube");
+                                intent.putExtra("video_title", title);
+                                intent.putExtra("video_description", description);
+                                intent.putExtra("video_url", video_url);
+                                startActivity(intent);
+                            }
+                        });
                     }
-                    View youtuber_element_container = getLayoutInflater().inflate(R.layout.container_youtuber_list, null);
-                    ImageView youtube_thumbnail_imageView = (ImageView) youtuber_element_container.findViewById(R.id.youtube_thumbnail_imageView);
-                    TextView youtube_title_textView = (TextView) youtuber_element_container.findViewById(R.id.youtube_title_textView);
-                    youtube_title_textView.setText(title);
-                    load_image(thumbnail_url, youtube_thumbnail_imageView);
-                    container.addView(youtuber_element_container);
+
                     progressbar_invisible();
                 }
             } catch (JSONException e) {

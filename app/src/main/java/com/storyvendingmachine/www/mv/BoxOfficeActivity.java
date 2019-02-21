@@ -4,6 +4,7 @@ import android.content.Intent;
 import android.media.AudioManager;
 import android.net.Uri;
 import android.os.Build;
+import android.support.constraint.ConstraintLayout;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -36,32 +37,37 @@ public class BoxOfficeActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_box_office);
-        screen=1;
+        screen = 1;
 
-        MuteAudio();
-        volumeFlag=0;
-
-        volume_mute = (ImageView) findViewById(R.id.volume_mute_control_button);
-        volume_mute.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                if(volumeFlag == 0){
-                    volume_mute.setImageDrawable(null);
-                    volume_mute.setBackgroundResource(R.drawable.volume_on_icon);
-                    UnMuteAudio();
-                    volumeFlag=1;
-                }else{
-                    volume_mute.setImageDrawable(null);
-                    volume_mute.setBackgroundResource(R.drawable.volume_off_icon);
-                    MuteAudio();
-                    volumeFlag=0;
-                }
-
-            }
-        });
+//        MuteAudio();
+//        volumeFlag=0;
+//
+//        volume_mute = (ImageView) findViewById(R.id.volume_mute_control_button);
+//        volume_mute.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View view) {
+//                if(volumeFlag == 0){
+//                    volume_mute.setImageDrawable(null);
+//                    volume_mute.setBackgroundResource(R.drawable.volume_on_icon);
+//                    UnMuteAudio();
+//                    volumeFlag=1;
+//                }else{
+//                    volume_mute.setImageDrawable(null);
+//                    volume_mute.setBackgroundResource(R.drawable.volume_off_icon);
+//                    MuteAudio();
+//                    volumeFlag=0;
+//                }
+//
+//            }
+//        });
 
 
         Intent intent = getIntent();
+        String from = intent.getStringExtra("from");
+        if (from.equals("boxOffice")) {
+
+        ConstraintLayout youtube_description_conLayout = (ConstraintLayout) findViewById(R.id.youtube_description_conLayout);
+        youtube_description_conLayout.setVisibility(View.GONE);
         String rank = intent.getStringExtra("rank");
         final String webview_url = intent.getStringExtra("hyperlink");//네이버 하이퍼 링크
         String title = intent.getStringExtra("title");
@@ -78,18 +84,30 @@ public class BoxOfficeActivity extends AppCompatActivity {
         });
 
         when_first_created(title);
-        toolbar(rank);
+        toolbar("  Box Office No." + rank);
         youtube(youtube_url);
+        }else{
+            //from.equal("youtube");
+            String title = intent.getStringExtra("video_title");
+            String description = intent.getStringExtra("video_description");
+            String video_url = intent.getStringExtra("video_url");
 
+            ConstraintLayout movie_info_conLayout = (ConstraintLayout) findViewById(R.id.movie_info_conLayout);
+            movie_info_conLayout.setVisibility(View.GONE);
+            TextView description_textView = (TextView) findViewById(R.id.description_textView);
+
+            when_first_created(title);
+            description_textView.setText(description);
+            youtube(video_url);
+            toolbar("");
+
+        }
     }
 
     public void when_first_created(String title){
         TextView title_textView = (TextView) findViewById(R.id.bo_movie_title_textView);
         title_textView.setText(title);
     }
-
-
-
     public void youtube(final String url){
         youTubePlayerFragment = YouTubePlayerSupportFragment.newInstance();
         youTubePlayerFragment.initialize("AIzaSyCtICWDaIimwYlVC6tkiUxa9d7ZswS0zP4", new YouTubePlayer.OnInitializedListener() {
@@ -109,7 +127,6 @@ public class BoxOfficeActivity extends AppCompatActivity {
         });
         transaction = getSupportFragmentManager().beginTransaction();
         transaction.add(R.id.youtube_fragment, youTubePlayerFragment).commit();
-
     }
 
     public void toolbar(String rank){
@@ -120,7 +137,7 @@ public class BoxOfficeActivity extends AppCompatActivity {
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setTitle("menu_button");
         getSupportActionBar().setHomeAsUpIndicator(R.drawable.back_button);
-        getSupportActionBar().setTitle("  Box Office No." + rank);  //해당 액티비티의 툴바에 있는 타이틀을 공백으로 처리
+        getSupportActionBar().setTitle(rank);  //해당 액티비티의 툴바에 있는 타이틀을 공백으로 처리
 
 
     }

@@ -38,6 +38,7 @@ public class FrontPage extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_front_page);
         MobileAds.initialize(this, getResources().getString(R.string.admob_id));
+
         login_remember = getSharedPreferences("setting", 0);
         editor = login_remember.edit();
 

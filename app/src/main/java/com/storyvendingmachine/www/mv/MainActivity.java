@@ -30,6 +30,7 @@ import android.widget.Switch;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.google.android.gms.ads.MobileAds;
 import com.kakao.auth.Session;
 import com.squareup.picasso.Picasso;
 
@@ -44,7 +45,8 @@ import static com.storyvendingmachine.www.mv.mainFragment.volume_mute;
 public class MainActivity extends AppCompatActivity{
 //        implements NavigationView.OnNavigationItemSelectedListener  {
 
-
+    final static int REQUEST_CODE_USER_INFO_ACTIVITY = 10001;
+    final static int RESULTCODE_CUSTOME_LOGOUT = 9899;
     static String LoginType;
     static String LoggedInUser_ID;
     static String LoggedInUser_nickname;
@@ -73,6 +75,7 @@ public class MainActivity extends AppCompatActivity{
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
         pb = (ProgressBar) findViewById(R.id.mainactivity_pb);
         toolbar_title_textView = (TextView) findViewById(R.id.toolbar_title_textView);
         fab = (com.melnykov.fab.FloatingActionButton) findViewById(R.id.floating_action_button);
@@ -213,7 +216,7 @@ public class MainActivity extends AppCompatActivity{
     }
     public void moveToUserInfoActivity(){
         Intent intent = new Intent(MainActivity.this, UserInfoSetting.class);
-        startActivityForResult(intent, 10001);
+        startActivityForResult(intent, REQUEST_CODE_USER_INFO_ACTIVITY);
         overridePendingTransition(R.anim.slide_in, R.anim.slide_left_bit);
     }
     public void floatingButtonControll(){
@@ -332,13 +335,38 @@ public class MainActivity extends AppCompatActivity{
         super.onActivityResult(requestCode, resultCode, data);
         if(requestCode == REQUEST_CODE_WRITE){
             Log.e("from where", "write");
-            if(requestCode==RESULT_OK){
+            if(resultCode==RESULT_OK){
                 Log.e("from where", "write result ok");
             }else if(resultCode==RESULT_CANCELED){
                 Log.e("from where", "write result cancel");
             }else{
                 Log.e("from where", "write result else");
             }
+        }else if(requestCode ==REQUEST_CODE_USER_INFO_ACTIVITY){
+            if(resultCode == RESULT_OK){
+
+            }else if(resultCode == RESULT_CANCELED){
+
+            }else if(resultCode == RESULTCODE_CUSTOME_LOGOUT){
+                login_remember = getSharedPreferences("setting", 0);
+                editor = login_remember.edit();
+                editor.putBoolean("id_pw_match", false);
+                editor.putString("user_email", "");
+                editor.putString("user_password", "");
+                Intent intent = new Intent(MainActivity.this, LoginActivity.class);
+                startActivity(intent);
+                editor.putString("kakao", "false");
+                editor.commit();
+                Session.getCurrentSession().removeCallback(callback);
+                //아래 2개는 완전히 콜백을 삭제시킨다.
+                Session.getCurrentSession().clearCallbacks();
+                Session.getCurrentSession().close();
+                finish();
+            }else{
+
+            }
+        }else{
+
         }
     }
 }

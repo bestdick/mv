@@ -64,7 +64,7 @@
                     app:layout_constraintRight_toRightOf="parent"
                     app:layout_constraintTop_toTopOf="parent">
 
-                    <ImageButton
+                    <ImageView
                         android:id="@+id/user_thumbnail_imageview"
                         android:layout_width="100dp"
                         android:layout_height="100dp"
@@ -77,17 +77,32 @@
                         app:layout_constraintTop_toTopOf="parent" />
 
                     <TextView
+                        android:id="@+id/login_type_textView"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="16dp"
+                        android:layout_marginTop="48dp"
+                        android:text="login type"
+                        android:textColor="@color/colorBlack"
+                        android:textStyle="bold"
+                        app:layout_constraintStart_toEndOf="@+id/user_thumbnail_imageview"
+                        app:layout_constraintTop_toTopOf="parent" />
+
+                    <TextView
                         android:id="@+id/user_id_textview"
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:layout_marginEnd="32dp"
+                        android:layout_marginRight="16dp"
                         android:layout_marginStart="16dp"
-                        android:layout_marginTop="64dp"
+                        android:layout_marginTop="8dp"
                         android:text="USER ID"
                         android:textColor="@color/colorGrey"
                         app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintHorizontal_bias="0.0"
+                        app:layout_constraintRight_toRightOf="parent"
                         app:layout_constraintStart_toEndOf="@+id/user_thumbnail_imageview"
-                        app:layout_constraintTop_toTopOf="parent" />
+                        app:layout_constraintTop_toBottomOf="@+id/login_type_textView" />
 
                     <TextView
                         android:id="@+id/user_nickname_textview"
@@ -104,20 +119,41 @@
 
                 </android.support.constraint.ConstraintLayout>
 
+                <android.support.constraint.ConstraintLayout
+                    android:id="@+id/action_menu_conLayout"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="1dp"
+                    app:layout_constraintHorizontal_bias="1.0"
+                    app:layout_constraintLeft_toLeftOf="parent"
+                    app:layout_constraintRight_toRightOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/constraintLayout5">
+
+                    <Button
+                        android:id="@+id/logout_button"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:text="로그아웃"
+                        android:textStyle="bold"
+                        android:textColor="@color/colorWhite"
+                        android:background="@color/colorCrimsonRed"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toTopOf="parent" />
+                </android.support.constraint.ConstraintLayout>
+
                 <com.google.android.gms.ads.AdView xmlns:ads="http://schemas.android.com/apk/res-auto"
                     android:id="@+id/adView"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_alignParentBottom="true"
                     android:layout_centerHorizontal="true"
-                    android:layout_marginRight="16dp"
                     ads:adSize="SMART_BANNER"
                     ads:adUnitId="@string/admob_banner_login_activtiy"
                     ads:layout_constraintEnd_toEndOf="parent"
-                    ads:layout_constraintHorizontal_bias="0.0"
-                    ads:layout_constraintRight_toRightOf="parent"
                     ads:layout_constraintStart_toStartOf="parent"
-                    ads:layout_constraintTop_toBottomOf="@+id/constraintLayout5" />
+                    ads:layout_constraintTop_toBottomOf="@+id/action_menu_conLayout" />
 
                 <android.support.constraint.ConstraintLayout
                     android:id="@+id/constraintLayout2"
@@ -128,7 +164,6 @@
                     android:gravity="center_vertical"
                     android:orientation="horizontal"
                     app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintHorizontal_bias="1.0"
                     app:layout_constraintLeft_toLeftOf="parent"
                     app:layout_constraintRight_toRightOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
@@ -198,7 +233,43 @@
 
                 </android.support.constraint.ConstraintLayout>
 
+                <android.support.constraint.ConstraintLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="1dp"
+                    android:background="@color/colorWhite"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/constraintLayout">
+
+                    <TextView
+                        android:id="@+id/this_device_version_textView"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_marginEnd="16dp"
+                        android:layout_marginStart="16dp"
+                        android:layout_marginTop="16dp"
+                        android:text="현재 버전 : "
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toTopOf="parent" />
+
+                    <TextView
+                        android:id="@+id/new_version_textView"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_marginBottom="16dp"
+                        android:layout_marginEnd="16dp"
+                        android:layout_marginStart="16dp"
+                        android:layout_marginTop="8dp"
+                        android:text="새 버전 : "
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toBottomOf="@+id/this_device_version_textView" />
+                </android.support.constraint.ConstraintLayout>
             </android.support.constraint.ConstraintLayout>
+
         </LinearLayout>
     </ScrollView>
 

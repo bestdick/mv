@@ -40,6 +40,8 @@ public class EtcFragment extends Fragment {
     ListView listView;
     List<EtcList> etcList;
     EtcListAdapter etcListAdapter;
+    SwipeRefreshLayout swiper;
+    String type_for_swiper;
     // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
     private static final String ARG_PARAM1 = "param1";
@@ -74,6 +76,7 @@ public class EtcFragment extends Fragment {
         View rootview = inflater.inflate(R.layout.fragment_etc, container, false);
         initializer(rootview);
         subMenuSelector(rootview);
+        swipeRefresher(rootview);
         return rootview;
     }
     public void initializer(View rootview){
@@ -82,6 +85,7 @@ public class EtcFragment extends Fragment {
         etcListAdapter = new EtcListAdapter(getActivity(), etcList);
         listView.setAdapter(etcListAdapter);
         String type = "news_announcement_update";
+        type_for_swiper = "news_announcement_update";
         View headerView = getLayoutInflater().inflate(R.layout.container_etc_header, null);
         TextView title_textView = (TextView) headerView.findViewById(R.id.title_textView);
         TextView write_textView = (TextView) headerView.findViewById(R.id.write_textView);
@@ -89,6 +93,19 @@ public class EtcFragment extends Fragment {
         write_textView.setVisibility(View.GONE);
         listView.addHeaderView(headerView);
         getEtc(type);
+
+    }
+    public void swipeRefresher(View rootview){
+        swiper = (SwipeRefreshLayout) rootview.findViewById(R.id.swipeRefresher);
+        swiper.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+            @Override
+            public void onRefresh() {
+                etcList.clear();
+                addHeader(type_for_swiper);
+                getEtc(type_for_swiper);
+                swiper.setRefreshing(false);
+            }
+        });
     }
     public void subMenuSelector(final View rootview){
         final TextView announcement_notifier_list_textView = (TextView) rootview.findViewById(R.id.announcement_notifier_list_textView);
@@ -107,6 +124,7 @@ public class EtcFragment extends Fragment {
                 announcement_notifier_list_textView.setTextColor(getResources().getColor(R.color.colorCrimsonRed));
                 etcList.clear();
                 String type = "news_announcement_update";
+                type_for_swiper="news_announcement_update";
                 addHeader(type);
                 getEtc(type);
             }
@@ -118,6 +136,7 @@ public class EtcFragment extends Fragment {
                 free_list_textView.setTextColor(getResources().getColor(R.color.colorCrimsonRed));
                 etcList.clear();
                 String type = "free_board";
+                type_for_swiper="free_board";
                 addHeader(type);
                 getEtc(type);
             }
@@ -129,6 +148,7 @@ public class EtcFragment extends Fragment {
                 error_list_textView.setTextColor(getResources().getColor(R.color.colorCrimsonRed));
                 etcList.clear();
                 String type = "error_board";
+                type_for_swiper="error_board";
                 addHeader(type);
                 getEtc(type);
             }
@@ -140,6 +160,7 @@ public class EtcFragment extends Fragment {
                 develop_list_textView.setTextColor(getResources().getColor(R.color.colorCrimsonRed));
                 etcList.clear();
                 String type = "suggestion_board";
+                type_for_swiper="suggestion_board";
                 addHeader(type);
                 getEtc(type);
             }
